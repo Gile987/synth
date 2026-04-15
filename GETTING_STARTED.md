@@ -25,6 +25,7 @@ Click the **"Click to Start Audio"** button. Browser security requires a user ge
 Click any module button in the left sidebar:
 - **Oscillator** - Sound source
 - **Filter** - Shapes the sound
+- **LFO** - Low frequency modulation
 - **Output** - Sends to speakers
 
 ### 3. Connect Modules
@@ -37,7 +38,9 @@ Valid connections:
 - Oscillator `output` → Filter `input`
 - Filter `output` → Output `input`
 - Oscillator `output` → Output `input` (direct)
-- Oscillator `output` → Filter `cutoff` (frequency modulation)
+- LFO `output` → Filter `cutoff` (auto-wah effect)
+- LFO `output` → Oscillator `frequency` (vibrato)
+- LFO `output` → Output `gain` (tremolo)
 
 ### 4. Adjust Parameters
 
@@ -94,6 +97,25 @@ Shapes timbre by filtering frequencies.
 - **Input** (audio) - Sound to filter
 - **Output** (audio) - Filtered sound
 - **Cutoff** (control input) - Modulate cutoff frequency
+
+### LFO
+
+Low Frequency Oscillator for modulation effects.
+
+**Parameters:**
+- **Rate** (0.1 - 20 Hz) - Speed of the modulation
+- **Depth** (0 - 5000) - How far the parameter moves (in Hz for frequency params)
+- **Waveform** (sine, square, sawtooth, triangle) - Shape of the modulation
+
+**Ports:**
+- **Output** (control) - Modulation signal to control other parameters
+- **Rate** (control input) - Modulate the LFO speed from another source
+- **Amplitude** (control input) - Modulate the modulation depth
+
+**Usage:** Connect the LFO output to a control input (blue square port) on another module. Try:
+- LFO → Filter cutoff for auto-wah effects
+- LFO → Oscillator frequency for vibrato
+- LFO → Output gain for tremolo
 
 ### Output
 

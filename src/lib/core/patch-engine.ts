@@ -88,16 +88,24 @@ export class PatchEngine {
    * Remove a module and all its connections
    */
   public removeModule(id: string): void {
+    // Disconnect all connections involving this module first
+    // This ensures AudioParams are reset and audio nodes are properly disconnected
+    const connectionsToRemove: string[] = [];
+    for (const [connId, conn] of this.connections) {
+      if (conn.sourceModuleId === id || conn.targetModuleId === id) {
+        connectionsToRemove.push(connId);
+      }
+    }
+    
+    // Disconnect each connection (this resets AudioParams if needed)
+    for (const connId of connectionsToRemove) {
+      this.disconnect(connId);
+    }
+
+    // Now dispose the module itself
     const moduleInstance = this.moduleInstances.get(id);
     if (moduleInstance !== undefined) {
       moduleInstance.dispose();
-    }
-
-    // Remove all connections involving this module
-    for (const [connId, conn] of this.connections) {
-      if (conn.sourceModuleId === id || conn.targetModuleId === id) {
-        this.connections.delete(connId);
-      }
     }
 
     this.modules.delete(id);
@@ -163,6 +171,7 @@ export class PatchEngine {
 
     const sourceModule = this.moduleInstances.get(connection.sourceModuleId);
     const targetModule = this.moduleInstances.get(connection.targetModuleId);
+    const targetModuleState = this.modules.get(connection.targetModuleId);
 
     if (sourceModule !== undefined && targetModule !== undefined) {
       const sourcePort = sourceModule.getPort(connection.sourcePortName);
@@ -174,6 +183,14 @@ export class PatchEngine {
             sourcePort.node.disconnect(targetPort.node);
           } else if (targetPort.node instanceof AudioParam) {
             sourcePort.node.disconnect(targetPort.node);
+            // Reset the AudioParam to its stored parameter value
+            // since Web Audio doesn't automatically revert it
+            if (targetModuleState !== undefined) {
+              const paramValue = targetModuleState.params.get(connection.targetPortName);
+              if (paramValue !== undefined) {
+                targetPort.node.value = paramValue as number;
+              }
+            }
           }
         }
       }

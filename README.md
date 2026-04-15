@@ -32,6 +32,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 |--------|----------|-------------|
 | **Oscillator** | Source | Generates sine, square, sawtooth, triangle waveforms |
 | **Filter** | Effect | Biquad filter (lowpass, highpass, bandpass, etc.) |
+| **LFO** | Modulation | Low frequency oscillator for modulation effects |
 | **Output** | Output | Master gain with mute to speakers |
 
 ## Project Structure

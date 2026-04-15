@@ -3,6 +3,7 @@ import { PatchEngine } from '$core/patch-engine';
 import { OscillatorModule, OSCILLATOR_DEFINITION } from '$modules/oscillator';
 import { FilterModule, FILTER_DEFINITION } from '$modules/filter';
 import { OutputModule, OUTPUT_DEFINITION } from '$modules/output';
+import { LFOModule, LFO_DEFINITION } from '$modules/lfo';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { ModuleInstance, Position, ParamValue } from '$types';
 
@@ -33,6 +34,7 @@ class SynthService {
     this.registry.register(OSCILLATOR_DEFINITION, (id) => new OscillatorModule(id));
     this.registry.register(FILTER_DEFINITION, (id) => new FilterModule(id));
     this.registry.register(OUTPUT_DEFINITION, (id) => new OutputModule(id));
+    this.registry.register(LFO_DEFINITION, (id) => new LFOModule(id));
 
     // Update stores with available modules
     moduleDefinitions.set(this.registry.getAllDefinitions());
