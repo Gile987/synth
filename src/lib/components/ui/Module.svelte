@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { synthService, helpModal, selectedModuleId, selectedConnectionId } from '$stores';
+  import { synthService, selectedModuleId, selectedConnectionId } from '$stores';
   import type { ModuleInstance, ModuleDefinition, ParamValue, PortDefinition } from '$types';
   import HelpIcon from './HelpIcon.svelte';
 
@@ -29,8 +29,8 @@
     $selectedConnectionId = null;
   }
 
-  const inputPorts = $derived(definition.ports.filter(p => p.direction === 'input'));
-  const outputPorts = $derived(definition.ports.filter(p => p.direction === 'output'));
+  const inputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'input'));
+  const outputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'output'));
 </script>
 
 <div
@@ -172,6 +172,7 @@
   .category-source { background: linear-gradient(135deg, #2a4a6e, #1a3a5e); }
   .category-effect { background: linear-gradient(135deg, #4a2a6e, #3a1a5e); }
   .category-output { background: linear-gradient(135deg, #6e2a2a, #5e1a1a); }
+  .category-modulation { background: linear-gradient(135deg, #2a6e4a, #1a5e3a); }
 
   .title {
     flex: 1;
