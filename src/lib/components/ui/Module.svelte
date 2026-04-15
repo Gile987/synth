@@ -31,6 +31,28 @@
 
   const inputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'input'));
   const outputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'output'));
+
+  function getUnit(paramName: string): string {
+    switch (paramName) {
+      case 'frequency':
+        return ' Hz';
+      case 'rate':
+        return ' Hz';
+      case 'cutoff':
+        return ' Hz';
+      case 'detune':
+        return ' cents';
+      case 'q':
+      case 'resonance':
+        return '';
+      case 'gain':
+        return ' dB';
+      case 'amplitude':
+        return '';
+      default:
+        return '';
+    }
+  }
 </script>
 
 <div
@@ -92,22 +114,33 @@
     <div class="params-section">
       {#each definition.params as param}
         {@const paramId = `${module.id}-${param.name}`}
+        {@const currentValue = module.params.get(param.name) ?? param.defaultValue}
         <div class="param">
           <label for={paramId}>{param.label}</label>
           {#if param.controlType === 'knob' || param.controlType === 'slider'}
-            <input
-              id={paramId}
-              type="range"
-              min={param.min}
-              max={param.max}
-              step={param.step || 1}
-              value={module.params.get(param.name) ?? param.defaultValue}
-              oninput={(e) => handleParamChange(param.name, parseFloat(e.currentTarget.value))}
-            />
+            <div class="slider-control">
+              <input
+                id={paramId}
+                type="range"
+                min={param.min}
+                max={param.max}
+                step={param.step || 1}
+                value={currentValue}
+                oninput={(e) => {
+                  const newValue = parseFloat(e.currentTarget.value);
+                  handleParamChange(param.name, newValue);
+                  const display = e.currentTarget.nextElementSibling;
+                  if (display) {
+                    display.textContent = newValue + getUnit(param.name);
+                  }
+                }}
+              />
+              <span class="param-value">{currentValue}{getUnit(param.name)}</span>
+            </div>
           {:else if param.controlType === 'select'}
             <select
               id={paramId}
-              value={module.params.get(param.name) ?? param.defaultValue}
+              value={currentValue}
               onchange={(e) => handleParamChange(param.name, e.currentTarget.value)}
             >
               {#each param.options ?? [] as opt}
@@ -118,7 +151,7 @@
             <input
               id={paramId}
               type="checkbox"
-              checked={module.params.get(param.name) ?? param.defaultValue}
+              checked={currentValue}
               onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
             />
           {:else if param.controlType === 'number'}
@@ -128,7 +161,7 @@
               min={param.min}
               max={param.max}
               step={param.step}
-              value={module.params.get(param.name) ?? param.defaultValue}
+              value={currentValue}
               onchange={(e) => handleParamChange(param.name, parseFloat(e.currentTarget.value))}
             />
           {/if}
@@ -293,5 +326,27 @@
   .param input[type="checkbox"] {
     width: auto;
     align-self: flex-start;
+  }
+
+  .slider-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .slider-control input[type="range"] {
+    flex: 1;
+  }
+
+  .param-value {
+    width: 70px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 11px;
+    color: #aaa;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
