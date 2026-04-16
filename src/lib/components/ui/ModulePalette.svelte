@@ -22,6 +22,7 @@
         class:category-source={def.category === 'source'}
         class:category-effect={def.category === 'effect'}
         class:category-output={def.category === 'output'}
+        class:category-modulation={def.category === 'modulation'}
         onclick={() => handleAddModule(def)}
       >
         {def.label}
@@ -81,5 +82,9 @@
 
   .category-output {
     border-left: 3px solid #e74c3c;
+  }
+
+  .category-modulation {
+    border-left: 3px solid #2ecc71;
   }
 </style>

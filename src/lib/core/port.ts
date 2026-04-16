@@ -1,4 +1,4 @@
-import type { Port, PortDefinition, PortType, PortDirection } from '$types';
+import type { Port, PortDefinition } from '$types';
 
 /**
  * Create a port from its definition and audio node

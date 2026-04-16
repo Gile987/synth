@@ -1,4 +1,4 @@
-import { writable, derived, type Readable, type Writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import type { ModuleInstance, Connection, Position, ModuleDefinition } from '$types';
 
 /**

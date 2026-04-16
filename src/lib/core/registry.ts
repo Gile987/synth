@@ -1,4 +1,5 @@
-import type { ModuleDefinition, SynthModule } from '$types';
+import type { ModuleDefinition } from '$types';
+import type { SynthModule } from './module';
 
 /**
  * Registry entry containing definition and factory function

@@ -1,5 +1,5 @@
 import { BaseModule } from '$core/base-module';
-import type { ModuleDefinition, ParamValue } from '$types/index';
+import type { ModuleDefinition, ParamValue } from '$types';
 
 export const ADSR_DEFAULT_ATTACK = 0.1;
 export const ADSR_DEFAULT_DECAY = 0.3;

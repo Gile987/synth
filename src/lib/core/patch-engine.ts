@@ -2,8 +2,7 @@ import type {
   ModuleInstance,
   Connection,
   Position,
-  ParamValue,
-  Port
+  ParamValue
 } from '$types';
 import type { SynthModule } from './module';
 import { ModuleRegistry } from './registry';
@@ -74,7 +73,7 @@ export class PatchEngine {
       type,
       position: { ...position },
       params: new Map<string, ParamValue>(
-        definition.params.map(p => [p.name, p.defaultValue])
+        definition.params.map((p: { name: string; defaultValue: ParamValue }) => [p.name, p.defaultValue])
       ),
     };
 

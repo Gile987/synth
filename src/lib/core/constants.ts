@@ -1,9 +1,4 @@
-import type { 
-  ModuleDefinition, 
-  PortDefinition,
-  ParamDefinition,
-  HelpContent 
-} from '$types';
+// Constants only - no imports needed
 
 /**
  * Audio constants used throughout the application
