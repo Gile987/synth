@@ -18,7 +18,7 @@ The dev server starts on http://localhost:3000 (or the next available port).
 
 ### 1. Start the Audio Engine
 
-Click the **"Click to Start Audio"** button. Browser security requires a user gesture before audio can play.
+Click **Click to Start Audio**. Browser security requires a user gesture before audio can play.
 
 ### 2. Add Modules
 
@@ -26,6 +26,7 @@ Click any module button in the left sidebar:
 - **Oscillator** - Sound source
 - **Filter** - Shapes the sound
 - **LFO** - Low frequency modulation
+- **ADSR** - Envelope generator for shaping dynamics
 - **Output** - Sends to speakers
 
 ### 3. Connect Modules
@@ -41,6 +42,8 @@ Valid connections:
 - LFO `output` → Filter `cutoff` (auto-wah effect)
 - LFO `output` → Oscillator `frequency` (vibrato)
 - LFO `output` → Output `gain` (tremolo)
+- ADSR `output` → Filter `cutoff` (envelope filter)
+- ADSR `output` → Output `gain` (shaped amplitude)
 
 ### 4. Adjust Parameters
 
@@ -90,7 +93,7 @@ Shapes timbre by filtering frequencies.
 **Parameters:**
 - **Cutoff** (20Hz - 20kHz) - Frequency where filtering begins
 - **Resonance** (0.1 - 20) - Emphasis at the cutoff frequency
-- **Gain** (-40 to +40 dB) - Boost/cut for certain filter types
+- **Gain** (-40 to +40 dB) - Boost/cut (only works with peaking, lowshelf, highshelf types!)
 - **Type** (lowpass, highpass, bandpass, notch, allpass, peaking, lowshelf, highshelf)
 
 **Ports:**
@@ -112,10 +115,35 @@ Low Frequency Oscillator for modulation effects.
 - **Rate** (control input) - Modulate the LFO speed from another source
 - **Amplitude** (control input) - Modulate the modulation depth
 
-**Usage:** Connect the LFO output to a control input (blue square port) on another module. Try:
+**Usage:** Connect the LFO output to a control input (blue square port) on another module:
 - LFO → Filter cutoff for auto-wah effects
 - LFO → Oscillator frequency for vibrato
 - LFO → Output gain for tremolo
+
+### ADSR
+
+Attack-Decay-Sustain-Release envelope generator shapes sound over time.
+
+**Parameters:**
+- **Attack** (0 - 5 sec) - Time to reach full volume
+- **Decay** (0 - 5 sec) - Time to fall from peak to sustain level
+- **Sustain** (0 - 1) - Level held while note is active
+- **Release** (0 - 10 sec) - Time to fade to silence after note ends
+- **Depth** (0 - 5000) - How far the target parameter moves (2000-3000 for filters, 10-100 for pitch)
+
+**Ports:**
+- **Gate** (gate input) - Triggers the envelope (auto-triggers in loop)
+- **Output** (control) - Envelope signal (0-1 range)
+
+**Usage:** The envelope auto-triggers in a loop (attack → decay → sustain → release). Connect ADSR output to:
+- Filter `cutoff` for envelope filter effects (like wah-wah)
+- Output `gain` to shape amplitude over time
+- Oscillator `frequency` for pitch sweeps
+
+**Presets:**
+- Percussive pluck: Attack 0.01, Decay 0.2, Sustain 0, Release 0.3
+- Pad swell: Attack 0.5, Decay 0.5, Sustain 0.8, Release 2.0
+- Punchy bass: Attack 0.01, Decay 0.1, Sustain 0.6, Release 0.2
 
 ### Output
 

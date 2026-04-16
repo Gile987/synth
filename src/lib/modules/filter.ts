@@ -19,20 +19,6 @@ export const FILTER_DEFAULT_Q = 1;
 export const FILTER_DEFAULT_GAIN = 0;
 export const FILTER_DEFAULT_TYPE: FilterType = 'lowpass';
 
-export const FILTER_HELP = {
-  title: 'Filter',
-  description: 'Shapes the timbre of audio by removing or boosting certain frequencies. Essential for subtractive synthesis and sound design.',
-  usage: 'Connect audio input from an oscillator or other source. Adjust cutoff to control which frequencies pass through. Use resonance to emphasize frequencies near the cutoff point.',
-  tips: [
-    'Lowpass: removes high frequencies (classic "warm" filter sound)',
-    'Highpass: removes low frequencies (thin, airy sounds)',
-    'Bandpass: only allows a band of frequencies (telephone/radio effect)',
-    'Modulate cutoff with an LFO for wah-wah effects',
-    'Higher Q values create more resonant, vocal-like sweeps',
-  ],
-  related: ['oscillator', 'output'],
-};
-
 export const FILTER_DEFINITION: ModuleDefinition = {
   type: 'filter',
   label: 'Filter',
@@ -76,12 +62,8 @@ export const FILTER_DEFINITION: ModuleDefinition = {
       defaultValue: FILTER_DEFAULT_TYPE,
     },
   ],
-  help: FILTER_HELP,
 };
 
-/**
- * Filter module - shapes timbre by filtering frequencies
- */
 export class FilterModule extends BaseModule {
   private biquadFilter: BiquadFilterNode | undefined;
 
@@ -93,7 +75,6 @@ export class FilterModule extends BaseModule {
     const ctx = this.context;
     this.biquadFilter = ctx.createBiquadFilter();
 
-    // Set initial values
     const frequency = this.getParam('frequency') as number;
     const q = this.getParam('q') as number;
     const gain = this.getParam('gain') as number;
@@ -104,7 +85,6 @@ export class FilterModule extends BaseModule {
     this.biquadFilter.gain.value = gain;
     this.biquadFilter.type = filterType;
 
-    // Register ports
     this.registerPort({
       name: 'input',
       type: 'audio',
@@ -124,6 +104,20 @@ export class FilterModule extends BaseModule {
       type: 'control',
       direction: 'input',
       node: this.biquadFilter.frequency,
+    });
+
+    this.registerPort({
+      name: 'q',
+      type: 'control',
+      direction: 'input',
+      node: this.biquadFilter.Q,
+    });
+
+    this.registerPort({
+      name: 'gain',
+      type: 'control',
+      direction: 'input',
+      node: this.biquadFilter.gain,
     });
   }
 
