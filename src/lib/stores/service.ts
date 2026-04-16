@@ -5,6 +5,7 @@ import { FilterModule, FILTER_DEFINITION } from '$modules/filter';
 import { OutputModule, OUTPUT_DEFINITION } from '$modules/output';
 import { LFOModule, LFO_DEFINITION } from '$modules/lfo';
 import { ADSRModule, ADSR_DEFINITION } from '$modules/adsr';
+import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue } from '../types';
 
@@ -27,6 +28,7 @@ class SynthService {
     this.registry.register(OUTPUT_DEFINITION, (id) => new OutputModule(id));
     this.registry.register(LFO_DEFINITION, (id) => new LFOModule(id));
     this.registry.register(ADSR_DEFINITION, (id) => new ADSRModule(id));
+    this.registry.register(VCA_DEFINITION, (id) => new VCAModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
