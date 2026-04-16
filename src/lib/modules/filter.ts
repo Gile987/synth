@@ -19,6 +19,22 @@ export const FILTER_DEFAULT_Q = 1;
 export const FILTER_DEFAULT_GAIN = 0;
 export const FILTER_DEFAULT_TYPE: FilterType = 'lowpass';
 
+export const FILTER_HELP = {
+  title: 'Filter',
+  description: 'Shapes the timbre of audio by removing or boosting certain frequencies. Essential for subtractive synthesis and sound design.',
+  usage: 'Connect audio input from an oscillator or other source. Adjust cutoff to control which frequencies pass through. Use resonance to emphasize frequencies near the cutoff point.',
+  tips: [
+    'Lowpass: removes high frequencies (classic "warm" filter sound)',
+    'Highpass: removes low frequencies (thin, airy sounds)',
+    'Bandpass: only allows a band of frequencies (telephone/radio effect)',
+    'Modulate cutoff with an LFO for wah-wah effects',
+    'Higher Q values create more resonant, vocal-like sweeps',
+    'GAIN only works with: peaking, lowshelf, highshelf types',
+    'For lowpass/highpass/bandpass, the gain slider has no effect',
+  ],
+  related: ['oscillator', 'output'],
+};
+
 export const FILTER_DEFINITION: ModuleDefinition = {
   type: 'filter',
   label: 'Filter',
@@ -62,6 +78,7 @@ export const FILTER_DEFINITION: ModuleDefinition = {
       defaultValue: FILTER_DEFAULT_TYPE,
     },
   ],
+  help: FILTER_HELP,
 };
 
 export class FilterModule extends BaseModule {
