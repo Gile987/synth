@@ -7,7 +7,7 @@ import { LFOModule, LFO_DEFINITION } from '$modules/lfo';
 import { ADSRModule, ADSR_DEFINITION } from '$modules/adsr';
 import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { modules, connections, moduleDefinitions } from './patch';
-import type { Connection, ModuleInstance, Position, ParamValue } from '../types';
+import type { Connection, ModuleInstance, Position, ParamValue } from '$types';
 
 class SynthService {
   private registry: ModuleRegistry;

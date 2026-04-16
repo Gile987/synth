@@ -31,6 +31,6 @@
       "$types/*": ["./src/lib/types/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte"],
+  "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

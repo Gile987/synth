@@ -2,11 +2,11 @@
   import { modules, connections, moduleDefinitions, dragState, cableState, selectedModuleId, selectedConnectionId, synthService } from '$stores';
   import Module from './Module.svelte';
   import CableLayer from './CableLayer.svelte';
-  import type { Position, ModuleInstance, PortType } from '$types';
+  import type { Position, PortType, ModuleDefinition, ModuleInstance, Connection } from '$types';
 
   let boardElement: HTMLDivElement;
-  let moduleList = $derived(Array.from($modules.values()));
-  let connectionList = $derived(Array.from($connections.values()));
+  let moduleList: ModuleInstance[] = $derived(Array.from($modules.values()));
+  let connectionList: Connection[] = $derived(Array.from($connections.values()));
   
   // Get port positions for cable rendering
   function getPortPosition(moduleId: string, portName: string): Position | null {
@@ -87,8 +87,8 @@
     $selectedModuleId = null;
   }
 
-  function getModuleDefinition(type: string) {
-    return $moduleDefinitions.find(d => d.type === type);
+  function getModuleDefinition(type: string): ModuleDefinition | undefined {
+    return $moduleDefinitions.find((d: ModuleDefinition) => d.type === type);
   }
 
   function getPortType(moduleId: string, portName: string): PortType | null {
@@ -96,7 +96,7 @@
     if (!module) return null;
     const def = getModuleDefinition(module.type);
     if (!def) return null;
-    const port = def.ports.find(p => p.name === portName);
+    const port = def.ports.find((p: { name: string; type: PortType }) => p.name === portName);
     return port?.type ?? null;
   }
 

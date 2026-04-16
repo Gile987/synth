@@ -1,5 +1,5 @@
 import { BaseModule } from '$core/base-module';
-import type { ModuleDefinition, ParamValue, Port } from '$types';
+import type { ModuleDefinition, ParamValue } from '$types';
 import { A4_FREQUENCY, MAX_FREQUENCY, MIN_FREQUENCY } from '$core/constants';
 
 export const OSCILLATOR_WAVEFORMS = ['sine', 'square', 'sawtooth', 'triangle'] as const;

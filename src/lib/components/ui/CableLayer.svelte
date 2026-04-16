@@ -31,7 +31,6 @@
 
   function getCablePath(start: Position, end: Position): string {
     const dx = end.x - start.x;
-    const dy = end.y - start.y;
     const tension = Math.min(Math.abs(dx) * 0.5, 100);
     
     return `M ${start.x} ${start.y} 
@@ -62,9 +61,10 @@
     }
   }
 
-  function handleBoardClick() {
-    onSelectConnection(null);
-  }
+  // Unused function - reserved for future use
+  // function handleBoardClick() {
+  //   onSelectConnection(null);
+  // }
 </script>
 
 <svg class="cable-layer" role="presentation">

@@ -1,12 +1,10 @@
 import type { 
-  SynthModule,
   ModuleDefinition,
   ModuleState,
   ParamValue,
-  Port,
-  PortDefinition
+  Port
 } from '$types';
-import { createPort } from './port';
+import type { SynthModule } from './module';
 
 /**
  * BaseModule - Abstract base class for all synth modules
