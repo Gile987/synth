@@ -1,14 +1,24 @@
 <script lang="ts">
   import { moduleDefinitions, synthService } from '$stores';
   import type { ModuleDefinition } from '$types';
+  import SynthHelpModal from './SynthHelpModal.svelte';
 
   let definitions = $derived($moduleDefinitions);
+  let helpOpen = $state(false);
 
   function handleAddModule(def: ModuleDefinition) {
     // Add at center of visible area
     const x = 300 + Math.random() * 100;
     const y = 200 + Math.random() * 100;
     synthService.addModule(def.type, { x, y });
+  }
+
+  function openHelp() {
+    helpOpen = true;
+  }
+
+  function closeHelp() {
+    helpOpen = false;
   }
 </script>
 
@@ -29,7 +39,16 @@
       </button>
     {/each}
   </div>
+
+  <div class="help-section">
+    <button class="help-button" onclick={openHelp}>
+      <span class="help-icon">❓</span>
+      <span class="help-text">How does this work?</span>
+    </button>
+  </div>
 </aside>
+
+<SynthHelpModal isOpen={helpOpen} onClose={closeHelp} />
 
 <style>
   .palette {
@@ -86,5 +105,39 @@
 
   .category-modulation {
     border-left: 3px solid #2ecc71;
+  }
+
+  .help-section {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #444;
+  }
+
+  .help-button {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #4a9eff;
+    border-radius: 6px;
+    background: rgba(74, 158, 255, 0.1);
+    color: #4a9eff;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .help-button:hover {
+    background: rgba(74, 158, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  .help-icon {
+    font-size: 16px;
+  }
+
+  .help-text {
+    font-weight: 500;
   }
 </style>

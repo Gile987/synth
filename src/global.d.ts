@@ -108,3 +108,8 @@ declare module '$lib/*' {
   const mod: any;
   export = mod;
 }
+
+declare module '$content/*' {
+  const mod: any;
+  export = mod;
+}
