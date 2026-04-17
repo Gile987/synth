@@ -25,9 +25,13 @@ Click **Click to Start Audio**. Browser security requires a user gesture before 
 Click any module button in the left sidebar:
 - **Oscillator** - Sound source
 - **Filter** - Shapes the sound
+- **VCA** - Controls amplitude/loudness
 - **LFO** - Low frequency modulation
 - **ADSR** - Envelope generator for shaping dynamics
+- **Sequencer** - Creates rhythmic patterns
 - **Output** - Sends to speakers
+
+**Get Help:** Click the **❓ How does this work?** button at the bottom of the sidebar for a comprehensive synthesis guide.
 
 ### 3. Connect Modules
 
@@ -37,13 +41,15 @@ Click any module button in the left sidebar:
 
 Valid connections:
 - Oscillator `output` → Filter `input`
-- Filter `output` → Output `input`
+- Filter `output` → VCA `input`
+- VCA `output` → Output `input`
 - Oscillator `output` → Output `input` (direct)
 - LFO `output` → Filter `cutoff` (auto-wah effect)
 - LFO `output` → Oscillator `frequency` (vibrato)
-- LFO `output` → Output `gain` (tremolo)
+- ADSR `output` → VCA `cv` (shaped amplitude)
 - ADSR `output` → Filter `cutoff` (envelope filter)
-- ADSR `output` → Output `gain` (shaped amplitude)
+- Sequencer `gate` → ADSR `gate` (rhythmic triggering)
+- Sequencer `gate` → Oscillator `frequency` (pitch sequences)
 
 ### 4. Adjust Parameters
 
@@ -101,6 +107,20 @@ Shapes timbre by filtering frequencies.
 - **Output** (audio) - Filtered sound
 - **Cutoff** (control input) - Modulate cutoff frequency
 
+### VCA
+
+Voltage Controlled Amplifier - controls the loudness of audio signals.
+
+**Parameters:**
+- **Level** (0 - 1) - Base volume level
+
+**Ports:**
+- **Input** (audio) - Sound to control
+- **Output** (audio) - Controlled sound
+- **CV** (control input) - Modulation input for dynamic volume changes
+
+**Usage:** Place between your sound source and output. Essential for using ADSR envelopes to shape amplitude. Connect ADSR `output` to VCA `cv` for shaped volume envelopes.
+
 ### LFO
 
 Low Frequency Oscillator for modulation effects.
@@ -132,18 +152,37 @@ Attack-Decay-Sustain-Release envelope generator shapes sound over time.
 - **Depth** (0 - 5000) - How far the target parameter moves (2000-3000 for filters, 10-100 for pitch)
 
 **Ports:**
-- **Gate** (gate input) - Triggers the envelope (auto-triggers in loop)
+- **Gate** (gate input) - Triggers the envelope (can be connected from sequencer)
 - **Output** (control) - Envelope signal (0-1 range)
 
-**Usage:** The envelope auto-triggers in a loop (attack → decay → sustain → release). Connect ADSR output to:
+**Usage:** The envelope auto-triggers in a continuous loop (attack → decay → sustain → release). For rhythmic patterns, connect a Sequencer `gate` to ADSR `gate`. Connect ADSR output to:
+- VCA `cv` for shaped amplitude (most common)
 - Filter `cutoff` for envelope filter effects (like wah-wah)
-- Output `gain` to shape amplitude over time
 - Oscillator `frequency` for pitch sweeps
 
 **Presets:**
 - Percussive pluck: Attack 0.01, Decay 0.2, Sustain 0, Release 0.3
 - Pad swell: Attack 0.5, Decay 0.5, Sustain 0.8, Release 2.0
 - Punchy bass: Attack 0.01, Decay 0.1, Sustain 0.6, Release 0.2
+
+### Sequencer
+
+16-step sequencer that creates rhythmic gate patterns.
+
+**Parameters:**
+- **Steps** (8 or 16) - Number of steps in the sequence
+- **Rate** (0.5 - 20 Hz) - Speed of the sequence (steps per second)
+- **Playing** (toggle) - Start/stop the sequencer
+
+**Ports:**
+- **Gate** (gate output) - Sends gate signals on active steps
+- **Trigger** (trigger output) - Short pulses for one-shot events
+- **Rate** (control input) - Modulate sequencer speed
+- **Reset** (gate input) - Restart sequence from step 1
+
+**Usage:** Toggle steps ON/OFF to create patterns. Connect `gate` to ADSR `gate` for rhythmic envelope triggering. Classic patterns:
+- 4-on-the-floor: Steps 1, 5, 9, 13
+- Off-beats: Steps 3, 7, 11, 15
 
 ### Output
 
