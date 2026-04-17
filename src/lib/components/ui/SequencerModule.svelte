@@ -76,6 +76,21 @@
   $effect(() => {
     localRateValue = rateValue;
   });
+  
+  // Track current playing step
+  let currentStep = $state(0);
+  
+  // Poll for current step at 60fps
+  $effect(() => {
+    const interval = setInterval(() => {
+      const moduleInstance = synthService.getModuleInstance?.(module.id);
+      if (moduleInstance && 'getCurrentStep' in moduleInstance) {
+        currentStep = (moduleInstance as { getCurrentStep: () => number }).getCurrentStep();
+      }
+    }, 16); // ~60fps
+    
+    return () => clearInterval(interval);
+  });
 </script>
 
 <div
@@ -140,6 +155,7 @@
         <button
           class="step-button"
           class:active={isActive}
+          class:playing={currentStep === i}
           onclick={() => toggleStep(i)}
           title="Step {i + 1}"
         >
@@ -340,6 +356,17 @@
 
   .step-button.active:hover {
     background: #27ae60;
+  }
+
+  .step-button.playing {
+    box-shadow: 0 0 8px 2px #f1c40f;
+    border-color: #f1c40f;
+  }
+
+  .step-button.playing.active {
+    background: #f1c40f;
+    border-color: #f1c40f;
+    color: #000;
   }
 
   .sequencer-controls {

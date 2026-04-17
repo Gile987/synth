@@ -32,7 +32,12 @@
       const rect = boardElement.getBoundingClientRect();
       const x = e.clientX - rect.left - $dragState.offsetX;
       const y = e.clientY - rect.top - $dragState.offsetY;
-      synthService.updateModulePosition($dragState.moduleId, { x, y });
+      
+      // Snap to 20px grid
+      const snappedX = Math.round(x / 20) * 20;
+      const snappedY = Math.round(y / 20) * 20;
+      
+      synthService.updateModulePosition($dragState.moduleId, { x: snappedX, y: snappedY });
     }
 
     // Update cable drawing position
