@@ -42,6 +42,9 @@ src/
 ├── main.ts              # Bootstrap: mounts App to DOM
 ├── App.svelte           # Root: handles audio initialization gate
 └── lib/
+    ├── content/         # Educational content
+    │   └── synth-help.ts    # Synthesis guide content
+    │
     ├── core/            # Audio engine (no UI)
     │   ├── registry.ts      # ModuleRegistry singleton
     │   ├── patch-engine.ts  # PatchEngine class
@@ -51,18 +54,24 @@ src/
     │   └── constants.ts     # Audio constants
     │
     ├── modules/         # Concrete module implementations
-    │   ├── oscillator.ts    # OscillatorModule
-    │   ├── filter.ts       # FilterModule
-    │   ├── output.ts       # OutputModule
+    │   ├── oscillator.ts    # OscillatorModule - sound source
+    │   ├── filter.ts       # FilterModule - frequency shaping with modulation
+    │   ├── vca.ts          # VCAModule - amplitude control
+    │   ├── lfo.ts          # LFOModule - low frequency modulation
+    │   ├── adsr.ts         # ADSRModule - envelope generator with gate detection
+    │   ├── sequencer.ts    # SequencerModule - step sequencer with scheduler
+    │   ├── output.ts       # OutputModule - master output
     │   └── index.ts
     │
     ├── components/ui/   # Svelte UI components
-    │   ├── PatchBoard.svelte    # Main canvas
-    │   ├── Module.svelte        # Module UI
-    │   ├── ModulePalette.svelte # Add modules sidebar
-    │   ├── CableLayer.svelte    # SVG cable overlay
-    │   ├── HelpModal.svelte     # Help overlay
-    │   └── HelpIcon.svelte      # Help trigger
+    │   ├── PatchBoard.svelte     # Main canvas with grid snapping
+    │   ├── Module.svelte         # Standard module UI
+    │   ├── SequencerModule.svelte # Custom sequencer UI with step grid
+    │   ├── ModulePalette.svelte  # Add modules sidebar with help button
+    │   ├── CableLayer.svelte     # SVG cable overlay
+    │   ├── HelpModal.svelte      # Module help overlay
+    │   ├── HelpIcon.svelte       # Help trigger button
+    │   └── SynthHelpModal.svelte # Synthesis guide modal
     │
     ├── stores/          # State management
     │   ├── patch.ts      # Svelte stores
