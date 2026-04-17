@@ -7,6 +7,7 @@ import { LFOModule, LFO_DEFINITION } from '$modules/lfo';
 import { ADSRModule, ADSR_DEFINITION } from '$modules/adsr';
 import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { SequencerModule, SEQUENCER_DEFINITION } from '$modules/sequencer';
+import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue } from '$types';
 
@@ -31,6 +32,7 @@ class SynthService {
     this.registry.register(ADSR_DEFINITION, (id) => new ADSRModule(id));
     this.registry.register(VCA_DEFINITION, (id) => new VCAModule(id));
     this.registry.register(SEQUENCER_DEFINITION, (id) => new SequencerModule(id));
+    this.registry.register(NOISE_DEFINITION, (id) => new NoiseModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
