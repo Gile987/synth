@@ -22,7 +22,7 @@ export const FILTER_DEFAULT_TYPE: FilterType = 'lowpass';
 export const FILTER_HELP = {
   title: 'Filter',
   description: 'Shapes the timbre of audio by removing or boosting certain frequencies. Essential for subtractive synthesis and sound design.',
-  usage: 'Connect audio input from an oscillator or other source. Adjust cutoff to control which frequencies pass through. Use resonance to emphasize frequencies near the cutoff point.',
+  usage: 'Connect audio input from an oscillator or other source. Adjust cutoff to control which frequencies pass through. Use resonance to emphasize frequencies near the cutoff point. Connect modulation sources (LFO, ADSR) to cutoff input for dynamic filter sweeps.',
   tips: [
     'Lowpass: removes high frequencies (classic "warm" filter sound)',
     'Highpass: removes low frequencies (thin, airy sounds)',
@@ -31,8 +31,9 @@ export const FILTER_HELP = {
     'Higher Q values create more resonant, vocal-like sweeps',
     'GAIN only works with: peaking, lowshelf, highshelf types',
     'For lowpass/highpass/bandpass, the gain slider has no effect',
+    'ADSR/LFO connected to cutoff will ADD to the base frequency',
   ],
-  related: ['oscillator', 'output'],
+  related: ['oscillator', 'output', 'adsr'],
 };
 
 export const FILTER_DEFINITION: ModuleDefinition = {
@@ -121,20 +122,6 @@ export class FilterModule extends BaseModule {
       type: 'control',
       direction: 'input',
       node: this.biquadFilter.frequency,
-    });
-
-    this.registerPort({
-      name: 'q',
-      type: 'control',
-      direction: 'input',
-      node: this.biquadFilter.Q,
-    });
-
-    this.registerPort({
-      name: 'gain',
-      type: 'control',
-      direction: 'input',
-      node: this.biquadFilter.gain,
     });
   }
 

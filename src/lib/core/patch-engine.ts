@@ -141,10 +141,17 @@ export class PatchEngine {
     }
 
     // Create audio connection
+    console.log(`[PatchEngine] Connecting ${sourceModuleId}:${sourcePortName} -> ${targetModuleId}:${targetPortName}`);
+    console.log(`[PatchEngine] Source node type: ${sourcePort.node.constructor.name}, Target node type: ${targetPort.node.constructor.name}`);
+    
     if (sourcePort.node instanceof AudioNode && targetPort.node instanceof AudioNode) {
       sourcePort.node.connect(targetPort.node);
+      console.log(`[PatchEngine] Connected AudioNode -> AudioNode`);
     } else if (sourcePort.node instanceof AudioNode && targetPort.node instanceof AudioParam) {
       sourcePort.node.connect(targetPort.node);
+      console.log(`[PatchEngine] Connected AudioNode -> AudioParam`);
+    } else {
+      console.log(`[PatchEngine] WARNING: Could not connect - incompatible types`);
     }
 
     const connection: Connection = {

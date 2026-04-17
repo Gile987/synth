@@ -80,6 +80,7 @@ declare module '$stores' {
     removeModule(id: string): void;
     updateModulePosition(id: string, position: Position): void;
     setModuleParam(id: string, name: string, value: ParamValue): void;
+    getModuleInstance(id: string): { getStepPattern?: () => readonly boolean[]; setStep?: (index: number, value: boolean) => void } | undefined;
     connect(sourceModuleId: string, sourcePortName: string, targetModuleId: string, targetPortName: string): Connection;
     disconnect(connectionId: string): void;
     dispose(): void;

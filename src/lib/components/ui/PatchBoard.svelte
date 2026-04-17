@@ -1,6 +1,7 @@
 <script lang="ts">
   import { modules, connections, moduleDefinitions, dragState, cableState, selectedModuleId, selectedConnectionId, synthService } from '$stores';
   import Module from './Module.svelte';
+  import SequencerModule from './SequencerModule.svelte';
   import CableLayer from './CableLayer.svelte';
   import type { Position, PortType, ModuleDefinition, ModuleInstance, Connection } from '$types';
 
@@ -151,13 +152,23 @@
   {#each moduleList as module (module.id)}
     {@const def = getModuleDefinition(module.type)}
     {#if def}
-      <Module
-        {module}
-        definition={def}
-        onDragStart={(e) => handleModuleDragStart(module.id, e)}
-        onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
-        onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
-      />
+      {#if module.type === 'sequencer'}
+        <SequencerModule
+          {module}
+          definition={def}
+          onDragStart={(e) => handleModuleDragStart(module.id, e)}
+          onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
+          onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
+        />
+      {:else}
+        <Module
+          {module}
+          definition={def}
+          onDragStart={(e) => handleModuleDragStart(module.id, e)}
+          onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
+          onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
+        />
+      {/if}
     {/if}
   {/each}
 </div>

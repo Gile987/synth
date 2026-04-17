@@ -87,7 +87,10 @@ export class ADSRModule extends BaseModule {
   private constantSource: ConstantSourceNode | undefined;
   private gainNode: GainNode | undefined;
   private depthNode: GainNode | undefined;
+  private gateInputNode: GainNode | undefined;
+  private gateMonitor: ScriptProcessorNode | undefined;
   private isGateHigh = false;
+  private lastGateValue = 0;
   private autoTriggerInterval: number | undefined;
 
   constructor(id: string) {
@@ -104,11 +107,31 @@ export class ADSRModule extends BaseModule {
 
     this.gainNode.gain.value = 0;
 
-    const depth = this.getParam('depth') as number;
+    const depth = (this.getParam('depth') as number) ?? 1000;
     this.depthNode.gain.value = depth;
 
     this.constantSource.connect(this.gainNode);
     this.gainNode.connect(this.depthNode);
+
+    // Create gate input using GainNode (allows external signals to be connected)
+    this.gateInputNode = ctx.createGain();
+    this.gateInputNode.gain.value = 1;
+
+    // Use ScriptProcessorNode to monitor gate signal level
+    this.gateMonitor = ctx.createScriptProcessor(256, 1, 1);
+    this.gateInputNode.connect(this.gateMonitor);
+    
+    // Connect monitor to a silent gain node (not destination!) to keep it processing
+    const silentGain = ctx.createGain();
+    silentGain.gain.value = 0;
+    this.gateMonitor.connect(silentGain);
+
+    this.registerPort({
+      name: 'gate',
+      type: 'gate',
+      direction: 'input',
+      node: this.gateInputNode,
+    });
 
     this.registerPort({
       name: 'output',
@@ -119,8 +142,13 @@ export class ADSRModule extends BaseModule {
 
     this.constantSource.start();
 
+    // Monitor gate input for changes using audio processing
+    this.setupGateMonitoring();
+    
+    // Start auto-trigger for demo purposes
     this.startAutoTrigger();
   }
+
   private startAutoTrigger(): void {
     const loop = () => {
       if (!this.gainNode) return;
@@ -143,6 +171,39 @@ export class ADSRModule extends BaseModule {
     loop();
   }
 
+  private setupGateMonitoring(): void {
+    if (!this.gateMonitor) return;
+    
+    this.gateMonitor.onaudioprocess = (event) => {
+      const inputData = event.inputBuffer.getChannelData(0);
+      
+      // Calculate average amplitude
+      let sum = 0;
+      for (let i = 0; i < inputData.length; i++) {
+        sum += Math.abs(inputData[i] ?? 0);
+      }
+      const avgAmplitude = sum / inputData.length;
+      
+      // Detect gate state (threshold at 0.3)
+      const wasLow = this.lastGateValue <= 0.3;
+      const isHigh = avgAmplitude > 0.3;
+      
+      if (isHigh && wasLow) {
+        // Rising edge - trigger envelope
+        console.log(`[ADSR ${this.id}] Gate ON (amplitude: ${avgAmplitude.toFixed(2)})`);
+        this.trigger();
+        this.isGateHigh = true;
+      } else if (!isHigh && !wasLow) {
+        // Falling edge - release envelope
+        console.log(`[ADSR ${this.id}] Gate OFF (amplitude: ${avgAmplitude.toFixed(2)})`);
+        this.release();
+        this.isGateHigh = false;
+      }
+      
+      this.lastGateValue = avgAmplitude;
+    };
+  }
+
   protected destroyNodes(): void {
     if (this.autoTriggerInterval !== undefined) {
       clearTimeout(this.autoTriggerInterval);
@@ -161,41 +222,53 @@ export class ADSRModule extends BaseModule {
       this.depthNode.disconnect();
       this.depthNode = undefined;
     }
+    if (this.gateInputNode !== undefined) {
+      this.gateInputNode.disconnect();
+      this.gateInputNode = undefined;
+    }
+    if (this.gateMonitor !== undefined) {
+      this.gateMonitor.disconnect();
+      this.gateMonitor = undefined;
+    }
   }
 
   public trigger(): void {
     if (this.gainNode === undefined) return;
 
+    console.log(`[ADSR ${this.id}] TRIGGER called`);
+
     const now = this.context.currentTime;
-    const attack = this.getParam('attack') as number;
+    const attack = Math.max(0.002, this.getParam('attack') as number); // Minimum 2ms attack
     const decay = this.getParam('decay') as number;
     const sustain = this.getParam('sustain') as number;
 
     this.gainNode.gain.cancelScheduledValues(now);
 
-    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
+    // Start from 0 for proper envelope shape
+    this.gainNode.gain.setValueAtTime(0, now);
 
+    // Attack to full volume
     this.gainNode.gain.linearRampToValueAtTime(1, now + attack);
 
+    // Decay to sustain level
     this.gainNode.gain.exponentialRampToValueAtTime(
-      Math.max(0.001, sustain),
+      Math.max(0.01, sustain),
       now + attack + decay
     );
   }
+
   public release(): void {
     if (this.gainNode === undefined) return;
 
     const now = this.context.currentTime;
-    const releaseTime = this.getParam('release') as number;
+    const releaseTime = Math.max(0.005, this.getParam('release') as number); // Minimum 5ms release
 
     this.gainNode.gain.cancelScheduledValues(now);
 
-    this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, now);
-
-    this.gainNode.gain.exponentialRampToValueAtTime(
-      0.001,
-      now + releaseTime
-    );
+    // Release to 0 (completely silent)
+    const currentValue = this.gainNode.gain.value;
+    this.gainNode.gain.setValueAtTime(currentValue, now);
+    this.gainNode.gain.exponentialRampToValueAtTime(0.0001, now + releaseTime);
   }
 
   override setParam(name: string, value: ParamValue): void {

@@ -53,8 +53,8 @@ export class VCAModule extends BaseModule {
     const ctx = this.context;
     this.gainNode = ctx.createGain();
 
-    const gain = this.getParam('gain') as number;
-    this.gainNode.gain.value = gain;
+    // Start with gain at 0, let CV control it
+    this.gainNode.gain.value = 0;
 
     this.registerPort({
       name: 'input',
@@ -70,6 +70,7 @@ export class VCAModule extends BaseModule {
       node: this.gainNode,
     });
 
+    // CV controls the gain directly - 0 = silent, 1 = full volume
     this.registerPort({
       name: 'cv',
       type: 'control',
