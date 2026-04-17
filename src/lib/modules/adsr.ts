@@ -190,12 +190,10 @@ export class ADSRModule extends BaseModule {
       
       if (isHigh && wasLow) {
         // Rising edge - trigger envelope
-        console.log(`[ADSR ${this.id}] Gate ON (amplitude: ${avgAmplitude.toFixed(2)})`);
         this.trigger();
         this.isGateHigh = true;
       } else if (!isHigh && !wasLow) {
         // Falling edge - release envelope
-        console.log(`[ADSR ${this.id}] Gate OFF (amplitude: ${avgAmplitude.toFixed(2)})`);
         this.release();
         this.isGateHigh = false;
       }
@@ -234,8 +232,6 @@ export class ADSRModule extends BaseModule {
 
   public trigger(): void {
     if (this.gainNode === undefined) return;
-
-    console.log(`[ADSR ${this.id}] TRIGGER called`);
 
     const now = this.context.currentTime;
     const attack = Math.max(0.002, this.getParam('attack') as number); // Minimum 2ms attack

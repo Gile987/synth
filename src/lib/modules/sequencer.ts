@@ -260,8 +260,6 @@ export class SequencerModule extends BaseModule {
       this.triggerGainNode.gain.linearRampToValueAtTime(1, this.nextNoteTime + 0.001);
       this.triggerGainNode.gain.setValueAtTime(1, this.nextNoteTime + triggerDuration - 0.001);
       this.triggerGainNode.gain.linearRampToValueAtTime(0, this.nextNoteTime + triggerDuration);
-
-      console.log(`[Sequencer ${this.id}] Step ${stepIndex + 1} ON at ${this.nextNoteTime.toFixed(3)}s, gate gain: ${this.gateGainNode.gain.value}`);
     }
   }
 
