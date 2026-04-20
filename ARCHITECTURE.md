@@ -24,7 +24,7 @@ Created → Initialized → Running → Disposed
 The Web Audio API manages a directed graph of audio nodes:
 
 ```
-OscillatorNode → BiquadFilterNode → GainNode → destination
+OscillatorNode/BufferSourceNode → BiquadFilterNode → GainNode → destination
      ↑                    ↑
    (modulation)      (modulation)
      ↑                    ↑
@@ -192,7 +192,7 @@ handleModuleDragStart() → dragState = {moduleId, offsetX, offsetY}
     ↓
 Mouse move on PatchBoard
     ↓
-handleMouseMove() → calculate new position
+handleMouseMove() → calculate new position → snap to 20px grid
     ↓
 synthService.updateModulePosition(id, position)
     ↓
@@ -214,6 +214,13 @@ All stores in `/src/lib/stores/patch.ts`:
 | `cableState` | `Writable<CableState \| null>` | Cable being drawn |
 | `moduleDefinitions` | `Writable<readonly ModuleDefinition[]>` | Available module types |
 | `helpModal` | `Writable<HelpModalState>` | Help overlay state |
+
+## Current Module Set
+
+- Source: Oscillator, Noise
+- Effect: Filter, VCA
+- Modulation: LFO, ADSR, Sequencer
+- Output: Output
 
 ## Module Definition
 

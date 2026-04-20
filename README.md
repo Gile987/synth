@@ -5,7 +5,7 @@ A browser-based modular synthesizer built with Svelte 5 and the Web Audio API.
 ## What Is This?
 
 A virtual modular synthesizer where you can:
-- Add oscillator, filter, VCA, envelope, and sequencer modules
+- Add oscillator, noise, filter, VCA, envelope, LFO, sequencer, and output modules
 - Connect modules with virtual cables
 - Create rhythmic patterns with the step sequencer
 - Shape sounds with ADSR envelopes and filters
@@ -34,6 +34,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | Module | Category | Description |
 |--------|----------|-------------|
 | **Oscillator** | Source | Generates sine, square, sawtooth, triangle waveforms |
+| **Noise** | Source | Generates white, pink, and brown noise for percussion and textures |
 | **Filter** | Effect | Biquad filter (lowpass, highpass, bandpass, etc.) with modulation input |
 | **VCA** | Effect | Voltage Controlled Amplifier for amplitude shaping |
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
@@ -50,11 +51,19 @@ src/
 └── lib/
     ├── content/         # Educational content (synthesis help guide)
     ├── core/            # Audio engine (registry, patch-engine, base-module)
-    ├── modules/         # Synth modules (oscillator, filter, vca, lfo, adsr, sequencer, output)
+    ├── modules/         # Synth modules (oscillator, noise, filter, vca, lfo, adsr, sequencer, output)
     ├── components/ui/   # Svelte UI components (Module, PatchBoard, SequencerModule, SynthHelpModal, etc.)
     ├── stores/          # State management
     └── types/           # TypeScript definitions
 ```
+
+## Notable UX Features
+
+- Built-in synthesis guide modal from the left sidebar help button
+- Per-module contextual help via the header help icon
+- 20px grid snapping while dragging modules
+- Sequencer step playback indicator
+- Browser-safe audio initialization gate before the patching UI appears
 
 ## Documentation
 
