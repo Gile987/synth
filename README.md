@@ -64,6 +64,22 @@ src/
 - 20px grid snapping while dragging modules
 - Sequencer step playback indicator
 - Browser-safe audio initialization gate before the patching UI appears
+- Auto-save with visual feedback ("Auto-saving..." and "Saved" indicators in the toolbar)
+- Preset browser for saving, loading, and managing patches
+- Session restore on app startup from auto-saved state
+
+## Preset System
+
+The synth includes a preset system for saving and loading patches:
+
+- **Save patches** to browser localStorage with custom names
+- **Load patches** from the saved presets list
+- **Export/Import** patches as JSON files for backup or sharing
+- **Auto-save** saves your work to localStorage every 5 seconds (toggle on/off)
+- **Clear Session** removes all modules and auto-saved state, returning to the start screen
+- **Session restore** reloads your previous patch when you refresh or reopen the app
+
+No default presets are bundled. You create and save your own patches.
 
 ## Documentation
 

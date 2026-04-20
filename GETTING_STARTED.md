@@ -221,6 +221,55 @@ Sends audio to your speakers.
 **Ports:**
 - **Input** (audio) - Sound to output
 
+## Managing Patches
+
+### Auto-save
+
+Your work is automatically saved to browser storage every 5 seconds. The toolbar shows a status indicator when auto-save is active:
+
+- **"Auto-saving..."** appears while the patch is being written
+- **"Saved just now"** (with a checkmark) confirms the save completed
+- The timestamp updates to show how long ago the last save happened ("Saved 2 min ago")
+
+Toggle auto-save on or off with the checkbox in the toolbar. Auto-save only triggers when something has changed.
+
+### Save and Load Presets
+
+Click the **Presets** button in the toolbar to open the preset browser.
+
+**Save a patch:**
+1. Type a name in the "Save Current Patch" field
+2. Click **Save** (or press Enter)
+3. The patch is stored in your browser's localStorage
+
+**Load a patch:**
+1. Find the preset in the "Available Presets" list
+2. Click **Load** next to its name
+3. The current modules and connections are replaced with the saved patch
+
+**Export/Import files:**
+- **Save to File** downloads your current patch as a `.json` file
+- **Load from File** opens a file picker to import a previously exported `.json` patch
+
+Saved patches appear with a green "Saved" badge. You can delete any saved patch with the **Delete** button.
+
+### Clear Session
+
+Click the red **Clear Session** button in the toolbar to wipe everything:
+
+1. A confirmation dialog asks "Delete all modules? This cannot be undone."
+2. Clicking OK removes all modules and connections
+3. The auto-saved state is also cleared
+4. You return to the "Click to Start Audio" start screen
+
+### Session Restore
+
+When you refresh the page or reopen the app, your previous session is restored automatically:
+
+- A "Session restored" notification appears at the top of the screen
+- All modules, connections, and parameter values are reloaded from the last auto-save
+- Session restore only happens if you didn't manually clear the session before closing
+
 ## Keyboard Shortcuts
 
 - **Delete** - Remove selected module

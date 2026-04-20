@@ -8,6 +8,7 @@ import { ADSRModule, ADSR_DEFINITION } from '$modules/adsr';
 import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { SequencerModule, SEQUENCER_DEFINITION } from '$modules/sequencer';
 import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
+import { ReverbModule, REVERB_DEFINITION } from '$modules/reverb';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
 
@@ -33,6 +34,7 @@ class SynthService {
     this.registry.register(VCA_DEFINITION, (id) => new VCAModule(id));
     this.registry.register(SEQUENCER_DEFINITION, (id) => new SequencerModule(id));
     this.registry.register(NOISE_DEFINITION, (id) => new NoiseModule(id));
+    this.registry.register(REVERB_DEFINITION, (id) => new ReverbModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
