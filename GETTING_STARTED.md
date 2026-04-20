@@ -24,6 +24,7 @@ Click **Click to Start Audio**. Browser security requires a user gesture before 
 
 Click any module button in the left sidebar:
 - **Oscillator** - Sound source
+- **Noise** - White, pink, or brown noise for percussion and textures
 - **Filter** - Shapes the sound
 - **VCA** - Controls amplitude/loudness
 - **LFO** - Low frequency modulation
@@ -41,6 +42,7 @@ Click any module button in the left sidebar:
 
 Valid connections:
 - Oscillator `output` → Filter `input`
+- Noise `output` → Filter `input`
 - Filter `output` → VCA `input`
 - VCA `output` → Output `input`
 - Oscillator `output` → Output `input` (direct)
@@ -107,6 +109,27 @@ Shapes timbre by filtering frequencies.
 - **Output** (audio) - Filtered sound
 - **Cutoff** (control input) - Modulate cutoff frequency
 
+**Typical uses:**
+- Oscillator/Noise → Filter → VCA → Output
+- ADSR/LFO → Filter `cutoff` for timbral motion
+
+### Noise
+
+Generates noise for percussion, textures, and sound design.
+
+**Parameters:**
+- **Type** (`white`, `pink`, `brown`) - Character of the noise source
+- **Level** (0 - 1) - Output level
+
+**Ports:**
+- **Output** (audio) - The generated noise signal
+- **Level** (control input) - Modulate output volume from another source
+
+**Usage:**
+- White noise + highpass filter + short ADSR = hi-hat
+- White noise + bandpass filter + short ADSR = snare-like burst
+- Brown noise + lowpass filter = deep rumble / wind-like texture
+
 ### VCA
 
 Voltage Controlled Amplifier - controls the loudness of audio signals.
@@ -158,6 +181,7 @@ Attack-Decay-Sustain-Release envelope generator shapes sound over time.
 **Usage:** The envelope auto-triggers in a continuous loop (attack → decay → sustain → release). For rhythmic patterns, connect a Sequencer `gate` to ADSR `gate`. Connect ADSR output to:
 - VCA `cv` for shaped amplitude (most common)
 - Filter `cutoff` for envelope filter effects (like wah-wah)
+- Noise `level` for pulsing or swelling noise textures
 - Oscillator `frequency` for pitch sweeps
 
 **Presets:**
@@ -183,6 +207,8 @@ Attack-Decay-Sustain-Release envelope generator shapes sound over time.
 **Usage:** Toggle steps ON/OFF to create patterns. Connect `gate` to ADSR `gate` for rhythmic envelope triggering. Classic patterns:
 - 4-on-the-floor: Steps 1, 5, 9, 13
 - Off-beats: Steps 3, 7, 11, 15
+
+**Visual feedback:** The yellow step highlight shows the step currently being played.
 
 ### Output
 
@@ -218,6 +244,7 @@ Sends audio to your speakers.
 ### Modules Won't Move
 
 Make sure you're dragging the **header** (colored top bar), not the body or ports.
+Modules snap to a 20px grid, so movement is intentionally aligned.
 
 ## Building for Production
 
