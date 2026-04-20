@@ -6,3 +6,4 @@ export { ADSRModule, ADSR_DEFINITION } from './adsr';
 export { VCAModule, VCA_DEFINITION } from './vca';
 export { SequencerModule, SEQUENCER_DEFINITION } from './sequencer';
 export { NoiseModule, NOISE_DEFINITION } from './noise';
+export { ReverbModule, REVERB_DEFINITION } from './reverb';

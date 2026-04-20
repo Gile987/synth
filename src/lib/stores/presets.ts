@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 import type { PatchState, ModuleInstance, SerializableModuleInstance } from '$types';
 import { modules, connections } from './patch';
+import { synthService } from './service';
 
 const CURRENT_VERSION = '1.0.0';
 const LOCAL_STORAGE_KEY = 'modular-synth-presets';
@@ -283,9 +284,19 @@ class PresetManager {
   }
 
   public clearSession(): void {
-    // Clear modules and connections without disposing the entire service
-    modules.clear();
+    // Get all module IDs and remove them properly to stop audio
+    const moduleMap = get(modules);
+    const moduleIds = Array.from(moduleMap.keys());
+    
+    // Remove each module through synthService to properly dispose audio nodes
+    for (const id of moduleIds) {
+      synthService.removeModule(id);
+    }
+    
+    // Clear connections store
     connections.clear();
+    
+    // Clear autosave
     this.clearAutosave();
   }
 
