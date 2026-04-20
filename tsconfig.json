@@ -28,7 +28,8 @@
       "$components/*": ["./src/lib/components/*"],
       "$stores/*": ["./src/lib/stores/*"],
       "$types": ["./src/lib/types/index"],
-      "$types/*": ["./src/lib/types/*"]
+      "$types/*": ["./src/lib/types/*"],
+      "$content/*": ["./src/lib/content/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "src/**/*.d.ts"],

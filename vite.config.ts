@@ -12,6 +12,7 @@ export default defineConfig({
       '$components': resolve(__dirname, 'src/lib/components'),
       '$stores': resolve(__dirname, 'src/lib/stores'),
       '$types': resolve(__dirname, 'src/lib/types'),
+      '$content': resolve(__dirname, 'src/lib/content'),
     },
   },
   server: {

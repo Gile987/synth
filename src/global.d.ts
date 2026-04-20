@@ -17,6 +17,8 @@ declare module '$types' {
   export type { Connection } from './lib/types/index';
   export type { Patch } from './lib/types/index';
   export type { PortRef } from './lib/types/index';
+  export type { SerializableModuleInstance } from './lib/types/index';
+  export type { PatchState } from './lib/types/index';
 }
 
 declare module '$stores' {
@@ -84,9 +86,29 @@ declare module '$stores' {
     connect(sourceModuleId: string, sourcePortName: string, targetModuleId: string, targetPortName: string): Connection;
     disconnect(connectionId: string): void;
     dispose(): void;
+    loadPatch(state: import('$types').PatchState): Promise<void>;
   }
   
   export const synthService: SynthService;
+  
+  export class PresetManager {
+    getCurrentPatchState(): import('$types').PatchState;
+    saveToFile(filename?: string): void;
+    loadFromFile(): Promise<import('$types').PatchState | null>;
+    saveToLocalStorage(presetName: string, state?: import('$types').PatchState): void;
+    loadFromLocalStorage(presetName: string): import('$types').PatchState | null;
+    listPresets(): Array<{ name: string; state: import('$types').PatchState; createdAt: string }>;
+    deletePreset(presetName: string): boolean;
+    triggerAutosave(onSave?: () => void): void;
+    hasAutosave(): boolean;
+    loadAutosave(): import('$types').PatchState | null;
+    clearAutosave(): void;
+    getAutosavePreference(): boolean;
+    setAutosavePreference(enabled: boolean): void;
+    clearSession(): void;
+  }
+  
+  export const presetManager: PresetManager;
 }
 
 declare module '$core/*' {

@@ -9,7 +9,7 @@ import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { SequencerModule, SEQUENCER_DEFINITION } from '$modules/sequencer';
 import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
 import { modules, connections, moduleDefinitions } from './patch';
-import type { Connection, ModuleInstance, Position, ParamValue } from '$types';
+import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
 
 class SynthService {
   private registry: ModuleRegistry;
@@ -134,6 +134,64 @@ class SynthService {
     connections.clear();
     this.modulesRegistered = false;
     this.audioInitialized = false;
+  }
+
+  /**
+   * Load a patch from a PatchState object
+   * Clears existing patch and reconstructs from saved state
+   */
+  public async loadPatch(state: PatchState): Promise<void> {
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
+
+    // Clear existing patch
+    this.engine.dispose();
+    modules.clear();
+    connections.clear();
+
+    // Re-initialize the engine
+    await this.engine.initialize();
+
+    // Create modules
+    const moduleIdMap = new Map<string, string>();
+    
+    for (const savedModule of state.modules) {
+      try {
+        const newModule = this.addModule(savedModule.type, savedModule.position);
+        moduleIdMap.set(savedModule.id, newModule.id);
+
+        // Set module parameters
+        for (const [paramName, paramValue] of Object.entries(savedModule.params)) {
+          this.setModuleParam(newModule.id, paramName, paramValue);
+        }
+      } catch (err) {
+        console.error(`[synth] Failed to create module ${savedModule.type}:`, err);
+      }
+    }
+
+    // Create connections
+    for (const savedConnection of state.connections) {
+      try {
+        const newSourceId = moduleIdMap.get(savedConnection.sourceModuleId);
+        const newTargetId = moduleIdMap.get(savedConnection.targetModuleId);
+
+        if (newSourceId && newTargetId) {
+          this.connect(
+            newSourceId,
+            savedConnection.sourcePortName,
+            newTargetId,
+            savedConnection.targetPortName
+          );
+        } else {
+          console.warn(`[synth] Could not recreate connection: module not found`);
+        }
+      } catch (err) {
+        console.error(`[synth] Failed to create connection:`, err);
+      }
+    }
+
+    console.log(`[synth] Loaded patch with ${state.modules.length} modules and ${state.connections.length} connections`);
   }
 }
 
