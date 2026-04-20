@@ -188,13 +188,26 @@ export class PatchEngine {
           if (targetPort.node instanceof AudioNode) {
             sourcePort.node.disconnect(targetPort.node);
           } else if (targetPort.node instanceof AudioParam) {
-            sourcePort.node.disconnect(targetPort.node);
+            try {
+              sourcePort.node.disconnect(targetPort.node);
+            } catch (e) {
+              // Node might already be disconnected, ignore error
+              console.warn(`[PatchEngine] Disconnect warning: ${e}`);
+            }
             // Reset the AudioParam to its stored parameter value
             // since Web Audio doesn't automatically revert it
             if (targetModuleState !== undefined) {
               const paramValue = targetModuleState.params.get(connection.targetPortName);
-              if (paramValue !== undefined) {
-                targetPort.node.value = paramValue as number;
+              if (paramValue !== undefined && typeof paramValue === 'number') {
+                targetPort.node.value = paramValue;
+              } else {
+                // Fallback: try to get default from module definition
+                if (targetModule.definition) {
+                  const paramDef = targetModule.definition.params.find((p: { name: string }) => p.name === connection.targetPortName);
+                  if (paramDef && typeof paramDef.defaultValue === 'number') {
+                    targetPort.node.value = paramDef.defaultValue;
+                  }
+                }
               }
             }
           }
