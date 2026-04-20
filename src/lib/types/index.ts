@@ -118,9 +118,29 @@ export interface Patch {
 }
 
 /**
+ * Serializable module instance for preset storage
+ */
+export interface SerializableModuleInstance {
+  readonly id: string;
+  readonly type: string;
+  position: Position;
+  params: Record<string, ParamValue>;
+}
+
+/**
+ * Serializable patch state for preset storage
+ */
+export interface PatchState {
+  readonly modules: readonly SerializableModuleInstance[];
+  readonly connections: readonly Connection[];
+  readonly version: string;
+}
+
+/**
  * Port reference for connection operations
  */
 export interface PortRef {
   readonly moduleId: string;
   readonly portName: string;
 }
+
