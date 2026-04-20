@@ -85,6 +85,7 @@ export class SequencerModule extends BaseModule {
   private rateInputNode: ConstantSourceNode | undefined;
   private isPlaying = true;
   private lastResetValue = 0;
+  private lastTriggeredStep = 0; // Track which step actually played
 
   constructor(id: string) {
     super(id, SEQUENCER_DEFINITION);
@@ -238,6 +239,9 @@ export class SequencerModule extends BaseModule {
 
     const steps = this.getParam('steps') as number;
     const stepIndex = this.currentStep % steps;
+    
+    // Track which step is currently playing (for UI indicator)
+    this.lastTriggeredStep = stepIndex;
 
     // Always ensure gate is low at start of step window to prevent stuck gates
     this.gateGainNode.gain.setValueAtTime(0, this.nextNoteTime);
@@ -305,10 +309,10 @@ export class SequencerModule extends BaseModule {
   }
 
   /**
-   * Get the current step index
+   * Get the current step index (the one currently playing)
    */
   public getCurrentStep(): number {
-    return this.currentStep;
+    return this.lastTriggeredStep;
   }
 
   override setParam(name: string, value: ParamValue): void {
