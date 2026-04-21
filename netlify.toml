@@ -4,15 +4,11 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[context.production]
-  environment = { NODE_ENV = "production" }
 
 [[headers]]
   for = "/*"
