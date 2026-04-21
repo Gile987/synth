@@ -8,3 +8,4 @@ export { SequencerModule, SEQUENCER_DEFINITION } from './sequencer';
 export { NoiseModule, NOISE_DEFINITION } from './noise';
 export { ReverbModule, REVERB_DEFINITION } from './reverb';
 export { DelayModule, DELAY_DEFINITION } from './delay';
+export { MixerModule, MIXER_DEFINITION } from './mixer';
