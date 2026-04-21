@@ -37,6 +37,9 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **Noise** | Source | Generates white, pink, and brown noise for percussion and textures |
 | **Filter** | Effect | Biquad filter (lowpass, highpass, bandpass, etc.) with modulation input |
 | **VCA** | Effect | Voltage Controlled Amplifier for amplitude shaping |
+| **Reverb** | Effect | Convolution reverb with programmable impulse responses |
+| **Delay** | Effect | Echo effect with time, feedback, and mix controls |
+| **Mixer** | Effect | 4-channel audio mixer with individual levels and master output |
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
 | **ADSR** | Modulation | Envelope generator with gate input and auto-trigger |
 | **Sequencer** | Modulation | 16-step sequencer with gate/trigger outputs |
@@ -90,6 +93,53 @@ No default presets are bundled. You create and save your own patches.
 
 - Modern browser with Web Audio API support
 - Chrome, Firefox, Safari, Edge
+
+## Deployment
+
+### Netlify (Recommended for Private Repos)
+
+This project is configured for easy deployment to [Netlify](https://www.netlify.com), which works great with private GitHub repositories.
+
+**Setup Steps:**
+
+1. **Push to GitHub** (if not already done):
+   ```bash
+   git add .
+   git commit -m "Add Netlify deployment config"
+   git push origin main
+   ```
+
+2. **Connect to Netlify:**
+   - Go to [netlify.com](https://www.netlify.com) and sign up/login
+   - Click "Add new site" → "Import an existing project"
+   - Select GitHub and authorize Netlify
+   - Choose your private repo
+
+3. **Build Settings** (Netlify should auto-detect, but verify):
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist`
+   - **Node version:** 20 (set in `netlify.toml`)
+
+4. **Deploy:**
+   - Click "Deploy site"
+   - Netlify will build and deploy automatically
+   - You'll get a URL like `https://yoursite-xxx.netlify.app`
+
+5. **Password Protection** (Optional but recommended):
+   - Go to Site settings → Access control
+   - Enable "Password protection"
+   - Set a password to share only with friends
+
+**Features:**
+- ✅ Works with private repos (on free tier)
+- ✅ Automatic deploys on every push
+- ✅ Password protection available
+- ✅ Custom domain support
+- ✅ HTTPS by default
+
+### GitHub Pages
+
+For public repositories, you can also deploy to GitHub Pages. See the project wiki for GitHub Actions setup.
 
 ## License
 
