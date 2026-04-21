@@ -9,6 +9,7 @@ import { VCAModule, VCA_DEFINITION } from '$modules/vca';
 import { SequencerModule, SEQUENCER_DEFINITION } from '$modules/sequencer';
 import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
 import { ReverbModule, REVERB_DEFINITION } from '$modules/reverb';
+import { DelayModule, DELAY_DEFINITION } from '$modules/delay';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
 
@@ -35,6 +36,7 @@ class SynthService {
     this.registry.register(SEQUENCER_DEFINITION, (id) => new SequencerModule(id));
     this.registry.register(NOISE_DEFINITION, (id) => new NoiseModule(id));
     this.registry.register(REVERB_DEFINITION, (id) => new ReverbModule(id));
+    this.registry.register(DELAY_DEFINITION, (id) => new DelayModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
