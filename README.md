@@ -40,6 +40,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **Reverb** | Effect | Convolution reverb with programmable impulse responses |
 | **Delay** | Effect | Echo effect with time, feedback, and mix controls |
 | **Mixer** | Effect | 4-channel audio mixer with individual levels and master output |
+| **Distortion** | Effect | Wave shaping distortion with adjustable drive and mix |
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
 | **ADSR** | Modulation | Envelope generator with gate input and auto-trigger |
 | **Sequencer** | Modulation | 16-step sequencer with gate/trigger outputs |
