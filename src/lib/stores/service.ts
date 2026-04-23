@@ -11,6 +11,7 @@ import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
 import { ReverbModule, REVERB_DEFINITION } from '$modules/reverb';
 import { DelayModule, DELAY_DEFINITION } from '$modules/delay';
 import { MixerModule, MIXER_DEFINITION } from '$modules/mixer';
+import { DistortionModule, DISTORTION_DEFINITION } from '$modules/distortion';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
 
@@ -39,6 +40,7 @@ class SynthService {
     this.registry.register(REVERB_DEFINITION, (id) => new ReverbModule(id));
     this.registry.register(DELAY_DEFINITION, (id) => new DelayModule(id));
     this.registry.register(MIXER_DEFINITION, (id) => new MixerModule(id));
+    this.registry.register(DISTORTION_DEFINITION, (id) => new DistortionModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
