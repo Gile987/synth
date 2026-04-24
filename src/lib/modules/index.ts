@@ -11,3 +11,4 @@ export { DelayModule, DELAY_DEFINITION } from './delay';
 export { MixerModule, MIXER_DEFINITION } from './mixer';
 export { DistortionModule, DISTORTION_DEFINITION } from './distortion';
 export { AttenuverterModule, ATTENUVERTER_DEFINITION } from './attenuverter';
+export { MultiFxModule, MULTI_FX_DEFINITION } from './multi-fx';
