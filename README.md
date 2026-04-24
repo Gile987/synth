@@ -44,6 +44,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
 | **ADSR** | Modulation | Envelope generator with gate input and auto-trigger |
 | **Sequencer** | Modulation | 16-step sequencer with gate/trigger outputs |
+| **Attenuverter** | Modulation | Signal attenuator and inverter for modulation depth control |
 | **Output** | Output | Master gain with mute to speakers |
 
 ## Project Structure

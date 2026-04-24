@@ -10,3 +10,4 @@ export { ReverbModule, REVERB_DEFINITION } from './reverb';
 export { DelayModule, DELAY_DEFINITION } from './delay';
 export { MixerModule, MIXER_DEFINITION } from './mixer';
 export { DistortionModule, DISTORTION_DEFINITION } from './distortion';
+export { AttenuverterModule, ATTENUVERTER_DEFINITION } from './attenuverter';
