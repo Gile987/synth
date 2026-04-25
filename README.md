@@ -45,7 +45,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **ADSR** | Modulation | Envelope generator with gate input and auto-trigger |
 | **Sequencer** | Modulation | 16-step sequencer with gate/trigger outputs |
 | **Attenuverter** | Modulation | Signal attenuator and inverter for modulation depth control |
-| **Multi-FX** | Effect | Ring modulator with mix control for metallic/sci-fi effects |
+| **Multi-FX** | Effect | Ring modulator, bit crusher, and wave folder with mix control |
 | **Output** | Output | Master gain with mute to speakers |
 
 ## Project Structure
