@@ -261,6 +261,8 @@
     cursor: crosshair;
     border: 2px solid #555;
     transition: all 0.2s;
+    position: relative;
+    z-index: 10;
   }
 
   .port-circle:hover {

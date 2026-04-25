@@ -142,6 +142,7 @@
 
   function handlePortMouseDown(moduleId: string, portName: string, direction: 'input' | 'output') {
     if (direction === 'output') {
+      // Start new cable from output
       const pos = getPortPosition(moduleId, portName);
       if (pos) {
         $cableState = {
@@ -150,6 +151,29 @@
           currentX: pos.x,
           currentY: pos.y
         };
+      }
+    } else {
+      // Check if this input already has a connection
+      // Use connectionList which is already derived from $connections
+      const existingConnection = connectionList.find(
+        conn => conn.targetModuleId === moduleId && conn.targetPortName === portName
+      );
+      
+      if (existingConnection) {
+        // Pick up existing cable: disconnect and start dragging from the source
+        const pos = getPortPosition(existingConnection.sourceModuleId, existingConnection.sourcePortName);
+        if (pos) {
+          // Remove the existing connection
+          synthService.disconnect(existingConnection.id);
+          
+          // Start dragging from the source (as if we clicked the output)
+          $cableState = {
+            sourceModuleId: existingConnection.sourceModuleId,
+            sourcePortName: existingConnection.sourcePortName,
+            currentX: pos.x,
+            currentY: pos.y
+          };
+        }
       }
     }
   }
