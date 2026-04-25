@@ -4,12 +4,13 @@ import type { ModuleDefinition, ParamValue } from '$types';
 export const MULTI_FX_HELP = {
   title: 'Multi-FX',
   description:
-    'Multiple effects in one module. Ring modulation for metallic tones, bit crusher for lo-fi digital distortion, and wave folder for harmonic saturation.',
-  usage: 'Enable effects with toggles. Ring modulator creates metallic/sci-fi sounds. Bit crusher reduces bit depth. Wave folder adds harmonics by folding the waveform. Use mix to blend with clean signal.',
+    'Multiple effects in one module. Ring modulation, bit crusher, wave folder, and tremolo for a wide range of sound mangling possibilities.',
+  usage: 'Enable effects with toggles. Ring modulator creates metallic tones. Bit crusher reduces bit depth. Wave folder adds harmonics. Tremolo creates rhythmic volume swells. Use mix to blend with clean signal.',
   tips: [
     'Ring Mod: 100-500Hz for metallic, 1000Hz+ for sci-fi',
     'Bit Crusher: 8-12 bits for lo-fi warmth, 4-6 bits for harsh distortion, 1-2 bits for destruction',
     'Wave Folder: Low amount for subtle saturation, high amount for aggressive harmonics',
+    'Tremolo: Slow rates (1-3Hz) for ambient swells, fast rates (5-10Hz) for aggressive pumping',
     'Mix control blends clean and effected signal',
   ],
   related: ['oscillator', 'filter', 'distortion'],
@@ -68,6 +69,29 @@ export const MULTI_FX_DEFINITION: ModuleDefinition = {
       max: 10,
       step: 0.5,
       defaultValue: 3,
+    },
+    {
+      name: 'tremoloEnabled',
+      label: 'Tremolo',
+      controlType: 'toggle',
+      defaultValue: false,
+    },
+    {
+      name: 'tremoloRate',
+      label: 'Tremolo Rate',
+      controlType: 'knob',
+      min: 0.5,
+      max: 20,
+      defaultValue: 5,
+    },
+    {
+      name: 'tremoloDepth',
+      label: 'Tremolo Depth',
+      controlType: 'slider',
+      min: 0,
+      max: 1,
+      step: 0.01,
+      defaultValue: 0.7,
     },
     {
       name: 'mix',
@@ -135,6 +159,10 @@ export class MultiFxModule extends BaseModule {
   
   // Wave folder
   private waveFoldShaper: WaveShaperNode | undefined;
+  
+  // Tremolo
+  private tremoloLFO: OscillatorNode | undefined;
+  private tremoloGain: GainNode | undefined;
 
   constructor(id: string) {
     super(id, MULTI_FX_DEFINITION);
@@ -161,6 +189,11 @@ export class MultiFxModule extends BaseModule {
     // Wave folder
     this.waveFoldShaper = ctx.createWaveShaper();
     this.waveFoldShaper.oversample = 'none';
+    
+    // Tremolo: LFO modulates a gain node
+    this.tremoloLFO = ctx.createOscillator();
+    this.tremoloLFO.type = 'sine';
+    this.tremoloGain = ctx.createGain();
 
     // Get params
     const mix = this.getParam('mix') as number;
@@ -170,26 +203,31 @@ export class MultiFxModule extends BaseModule {
     const bitDepth = this.getParam('bitDepth') as number;
     const waveFoldEnabled = this.getParam('waveFoldEnabled') as boolean;
     const foldAmount = this.getParam('foldAmount') as number;
+    const tremoloEnabled = this.getParam('tremoloEnabled') as boolean;
+    const tremoloRate = this.getParam('tremoloRate') as number;
+    const tremoloDepth = this.getParam('tremoloDepth') as number;
 
     // Set values
     this.dryGain.gain.value = 1 - mix;
     this.wetGain.gain.value = mix;
     this.ringModCarrier.frequency.value = ringModFreq;
+    this.tremoloLFO.frequency.value = tremoloRate;
 
     // FIXED CHAIN (always connected):
-    // Input -> [Ring Mod] -> [Bit Crusher] -> [Wave Folder] -> Wet -> Output
+    // Input -> [Ring Mod] -> [Bit Crusher] -> [Wave Folder] -> [Tremolo] -> Wet -> Output
     // Input -> Dry -> Output
     
     // Dry path (always clean)
     this.inputGain.connect(this.dryGain);
     this.dryGain.connect(this.outputGain);
     
-    // Wet path - always goes through all three effects in series
-    // Input -> RingModMultiply -> BitCrushShaper -> WaveFoldShaper -> WetGain -> Output
+    // Wet path - always goes through all effects in series
+    // Input -> RingModMultiply -> BitCrushShaper -> WaveFoldShaper -> TremoloGain -> WetGain -> Output
     this.inputGain.connect(this.ringModMultiply);
     this.ringModMultiply.connect(this.bitCrushShaper);
     this.bitCrushShaper.connect(this.waveFoldShaper);
-    this.waveFoldShaper.connect(this.wetGain);
+    this.waveFoldShaper.connect(this.tremoloGain);
+    this.tremoloGain.connect(this.wetGain);
     this.wetGain.connect(this.outputGain);
     
     // Ring mod carrier modulates the multiply gain
@@ -203,9 +241,23 @@ export class MultiFxModule extends BaseModule {
     // Set curves or null for bypass
     (this.bitCrushShaper.curve as Float32Array | null) = bitCrushEnabled ? createBitCrushCurve(bitDepth) : null;
     (this.waveFoldShaper.curve as Float32Array | null) = waveFoldEnabled ? createWaveFoldCurve(foldAmount) : null;
+    
+    // Tremolo setup
+    // LFO oscillates between -1 and 1, we scale it and offset to modulate gain
+    // With depth 0: gain stays at 1
+    // With depth 1: gain oscillates between 0 and 1 (full tremolo)
+    if (tremoloEnabled) {
+      this.tremoloLFO.connect(this.tremoloGain.gain);
+      // Set initial gain - the LFO will modulate around this
+      this.tremoloGain.gain.value = 1 - (tremoloDepth / 2);
+    } else {
+      // No tremolo - gain stays at 1
+      this.tremoloGain.gain.value = 1;
+    }
 
-    // Start oscillator
+    // Start oscillators
     this.ringModCarrier.start();
+    this.tremoloLFO.start();
 
     // Register ports
     this.registerPort({
@@ -242,6 +294,15 @@ export class MultiFxModule extends BaseModule {
       this.waveFoldShaper.disconnect();
       this.waveFoldShaper.curve = null;
       this.waveFoldShaper = undefined;
+    }
+    if (this.tremoloLFO !== undefined) {
+      this.tremoloLFO.stop();
+      this.tremoloLFO.disconnect();
+      this.tremoloLFO = undefined;
+    }
+    if (this.tremoloGain !== undefined) {
+      this.tremoloGain.disconnect();
+      this.tremoloGain = undefined;
     }
     if (this.inputGain !== undefined) {
       this.inputGain.disconnect();
@@ -325,6 +386,35 @@ export class MultiFxModule extends BaseModule {
           if (waveFoldEnabled) {
             const foldValue = Math.min(10, Math.max(1, value));
             (this.waveFoldShaper.curve as Float32Array | null) = createWaveFoldCurve(foldValue);
+          }
+        }
+        break;
+      case 'tremoloEnabled':
+        if (this.tremoloLFO !== undefined && this.tremoloGain !== undefined) {
+          if (value) {
+            // Enable: connect LFO to modulate gain
+            this.tremoloLFO.connect(this.tremoloGain.gain);
+            const tremoloDepth = this.getParam('tremoloDepth') as number;
+            this.tremoloGain.gain.value = 1 - (tremoloDepth / 2);
+          } else {
+            // Disable: disconnect LFO, set gain to 1
+            this.tremoloLFO.disconnect();
+            this.tremoloGain.gain.value = 1;
+          }
+        }
+        break;
+      case 'tremoloRate':
+        if (typeof value === 'number' && this.tremoloLFO !== undefined) {
+          this.tremoloLFO.frequency.value = Math.min(20, Math.max(0.5, value));
+        }
+        break;
+      case 'tremoloDepth':
+        if (typeof value === 'number' && this.tremoloGain !== undefined) {
+          const tremoloEnabled = this.getParam('tremoloEnabled') as boolean;
+          if (tremoloEnabled) {
+            const depthValue = Math.min(1, Math.max(0, value));
+            // Center the gain around 1 - depth/2 so it oscillates properly
+            this.tremoloGain.gain.value = 1 - (depthValue / 2);
           }
         }
         break;
