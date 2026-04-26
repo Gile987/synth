@@ -267,6 +267,7 @@
           <SequencerModule
             {module}
             definition={def}
+            isDragging={$dragState?.moduleId === module.id}
             onDragStart={(e) => handleModuleDragStart(module.id, e)}
             onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
             onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
@@ -275,6 +276,7 @@
           <Module
             {module}
             definition={def}
+            isDragging={$dragState?.moduleId === module.id}
             onDragStart={(e) => handleModuleDragStart(module.id, e)}
             onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
             onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}

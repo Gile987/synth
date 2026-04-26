@@ -6,12 +6,13 @@
   interface Props {
     module: ModuleInstance;
     definition: ModuleDefinition;
+    isDragging?: boolean;
     onDragStart: (e: MouseEvent) => void;
     onPortMouseDown: (portName: string, direction: 'input' | 'output') => void;
     onPortMouseUp: (portName: string, direction: 'input' | 'output') => void;
   }
 
-  let { module, definition, onDragStart, onPortMouseDown, onPortMouseUp }: Props = $props();
+  let { module, definition, isDragging = false, onDragStart, onPortMouseDown, onPortMouseUp }: Props = $props();
 
   let isSelected = $derived($selectedModuleId === module.id);
   let position = $derived(module.position);
@@ -58,6 +59,7 @@
 <div
   class="module"
   class:selected={isSelected}
+  class:dragging={isDragging}
   style="left: {position.x}px; top: {position.y}px;"
   onclick={handleSelect}
   onkeydown={(e) => e.key === 'Delete' && handleDelete()}
@@ -186,6 +188,11 @@
   .module.selected {
     border-color: #4a9eff;
     box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+  }
+
+  .module.dragging {
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   }
 
   .module-header {
