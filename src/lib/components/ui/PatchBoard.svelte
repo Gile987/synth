@@ -291,48 +291,76 @@
   .board-container {
     flex: 1;
     overflow: auto;
-    background-color: #0f0f1a;
+    background-color: #1a1815;
   }
 
   .patch-board {
     position: relative;
     background: 
-      radial-gradient(circle at 1px 1px, #333 1px, transparent 1px);
-    background-size: 20px 20px;
-    background-color: #1a1a2e;
+      /* Subtle grid like old engineering paper */
+      linear-gradient(rgba(139, 125, 107, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 125, 107, 0.05) 1px, transparent 1px),
+      /* Coffee stains and wear marks */
+      radial-gradient(circle at 15% 25%, rgba(160, 140, 120, 0.03) 0%, transparent 30%),
+      radial-gradient(circle at 75% 65%, rgba(140, 130, 110, 0.02) 0%, transparent 25%),
+      /* Warm worn desk surface */
+      linear-gradient(180deg, #2a2520 0%, #1a1815 50%, #151210 100%);
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%;
     transition: width 0.2s ease, height 0.2s ease;
     min-width: 100%;
     min-height: 100%;
   }
 
-  /* Custom Scrollbar Styling */
+  /* Old CRT scanline effect */
+  .patch-board::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0, 0, 0, 0.02) 3px,
+        rgba(0, 0, 0, 0.02) 6px
+      );
+    pointer-events: none;
+  }
+
+  /* Custom Scrollbar - like worn tape reels */
   .board-container::-webkit-scrollbar {
     width: 12px;
     height: 12px;
   }
 
   .board-container::-webkit-scrollbar-track {
-    background: #0f0f1a;
-    border-radius: 6px;
+    background: #2a2520;
+    border-radius: 0;
+    border: 1px solid #3a3530;
   }
 
   .board-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #4a5568 0%, #2d3748 100%);
-    border-radius: 6px;
-    border: 2px solid #0f0f1a;
+    background: linear-gradient(180deg, #4a4035 0%, #3a3025 50%, #2a2018 100%);
+    border-radius: 0;
+    border: 1px solid #5a5040;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .board-container::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #5a6578 0%, #3d4758 100%);
+    background: linear-gradient(180deg, #5a5045 0%, #4a4035 50%, #3a3028 100%);
   }
 
   .board-container::-webkit-scrollbar-corner {
-    background: #0f0f1a;
+    background: #2a2520;
+    border: 1px solid #3a3530;
   }
 
   /* Firefox Scrollbar */
   .board-container {
     scrollbar-width: thin;
-    scrollbar-color: #4a5568 #0f0f1a;
+    scrollbar-color: #4a4035 #2a2520;
   }
 </style>

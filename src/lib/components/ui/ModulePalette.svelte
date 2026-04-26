@@ -53,91 +53,110 @@
 <style>
   .palette {
     width: 200px;
-    background: #252542;
-    border-right: 1px solid #333;
+    background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
+    border-right: 2px solid #4a4035;
     padding: 16px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 
+      4px 0 15px rgba(0, 0, 0, 0.4),
+      inset -1px 0 0 rgba(255, 255, 255, 0.05);
   }
 
   h2 {
     margin: 0 0 16px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-size: 20px;
+    font-weight: 400;
+    color: #c4b8a8;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 3px;
+    border-bottom: 1px solid #4a4035;
+    padding-bottom: 12px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
   }
 
   .module-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex: 1;
   }
 
   .module-button {
-    padding: 12px 16px;
-    border: none;
-    border-radius: 6px;
-    background: #3a3a5e;
-    color: #fff;
-    font-size: 14px;
+    padding: 10px 14px;
+    border: 1px solid #4a4035;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
+    color: #b4a898;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     cursor: pointer;
     transition: all 0.2s;
     text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
   }
 
   .module-button:hover {
-    transform: translateX(4px);
-    filter: brightness(1.1);
+    background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
+    border-color: #5a5040;
+    color: #d4c4a8;
   }
 
   .category-source {
-    border-left: 3px solid #4a9eff;
+    border-left: 3px solid #7c9c7c;
   }
 
   .category-effect {
-    border-left: 3px solid #9b59b6;
+    border-left: 3px solid #9c7c8c;
   }
 
   .category-output {
-    border-left: 3px solid #e74c3c;
+    border-left: 3px solid #9c847c;
   }
 
   .category-modulation {
-    border-left: 3px solid #2ecc71;
+    border-left: 3px solid #7c8c9c;
   }
 
   .help-section {
     margin-top: auto;
     padding-top: 16px;
-    border-top: 1px solid #444;
+    border-top: 1px solid #4a4035;
   }
 
   .help-button {
     width: 100%;
     padding: 12px 16px;
-    border: 1px solid #4a9eff;
-    border-radius: 6px;
-    background: rgba(74, 158, 255, 0.1);
-    color: #4a9eff;
-    font-size: 13px;
+    border: 1px solid #5a5040;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
+    color: #c4b8a8;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   .help-button:hover {
-    background: rgba(74, 158, 255, 0.2);
-    transform: translateX(4px);
+    background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
+    border-color: #6a6050;
+    color: #d4c4a8;
   }
 
   .help-icon {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .help-text {
-    font-weight: 500;
+    font-weight: 400;
   }
 </style>
