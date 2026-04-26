@@ -182,14 +182,23 @@
 </div>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
   .app {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: #1a1a2e;
-    color: #e0e0e0;
-    font-family: system-ui, -apple-system, sans-serif;
+    background: 
+      /* VHS static noise */
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+      /* Worn tape background */
+      linear-gradient(180deg, #2a2520 0%, #1a1815 50%, #0f0e0c 100%);
+    background-size: 200px 200px, 100% 100%;
+    background-blend-mode: overlay, normal;
+    color: #c4b8a8;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     position: relative;
+    overflow: hidden;
   }
 
   .toolbar {
@@ -197,14 +206,23 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 24px;
-    background: #252542;
-    border-bottom: 1px solid #333;
+    background: #2a2720;
+    border-bottom: 2px solid #3a3630;
+    position: relative;
+    z-index: 100;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .toolbar h1 {
     margin: 0;
-    font-size: 20px;
-    font-weight: 600;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: #d4c4a8;
+    text-transform: uppercase;
+    letter-spacing: 3px;
   }
 
   .toolbar-controls {
@@ -215,27 +233,24 @@
 
   .toast {
     position: absolute;
-    top: 60px;
+    top: 70px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(74, 222, 128, 0.9);
-    color: #0f172a;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 500;
+    background: #3a3025;
+    color: #a8d4a8;
+    padding: 10px 20px;
+    border: 1px solid #5a5040;
+    font-weight: 400;
     font-size: 14px;
     z-index: 1000;
-    animation: slideDown 0.3s ease-out;
-  }
-
-  @keyframes slideDown {
-    from { transform: translate(-50%, -20px); opacity: 0; }
-    to { transform: translate(-50%, 0); opacity: 1; }
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
 
   .error {
-    color: #ff6b6b;
-    font-size: 14px;
+    color: #d4a8a8;
+    font-size: 13px;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
   }
 
   .main-content {
@@ -250,7 +265,23 @@
     justify-content: center;
     flex: 1;
     font-size: 16px;
-    color: #888;
+    color: #606080;
+  }
+
+  .main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    font-size: 16px;
+    color: #8a7a6a;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
   }
 
   .start-screen {
@@ -259,47 +290,77 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    gap: 16px;
+    gap: 20px;
   }
 
   .start-btn {
-    padding: 16px 32px;
-    font-size: 18px;
-    font-weight: 600;
-    background: linear-gradient(135deg, #4a9eff, #2980b9);
-    color: white;
-    border: none;
-    border-radius: 8px;
+    padding: 20px 48px;
+    font-size: 20px;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    background: 
+      linear-gradient(180deg, #4a4035 0%, #3a3025 50%, #2a2018 100%);
+    color: #d4c4a8;
+    border: 3px solid #5a5040;
+    border-radius: 2px;
     cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+    position: relative;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    filter: blur(0.2px);
+  }
+
+  .start-btn::before {
+    content: '▶';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a8d4a8;
+    font-size: 14px;
   }
 
   .start-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(74, 158, 255, 0.4);
+    background: 
+      linear-gradient(180deg, #5a5045 0%, #4a4035 50%, #3a3028 100%);
+    border-color: #6a6050;
+    color: #e4d4b8;
+  }
+
+  .start-btn:active {
+    background: 
+      linear-gradient(180deg, #3a3025 0%, #2a2018 50%, #1a1008 100%);
+    box-shadow: 
+      inset 0 2px 5px rgba(0, 0, 0, 0.5);
   }
 
   .hint {
-    color: #888;
+    color: #7a6a5a;
     font-size: 14px;
     margin: 0;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    opacity: 0.8;
   }
 
   .preset-btn {
     padding: 8px 16px;
     font-size: 14px;
-    font-weight: 500;
-    background: transparent;
-    color: #e0e0e0;
-    border: 1px solid #4a9eff;
-    border-radius: 6px;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
+    color: #c4b8a8;
+    border: 2px solid #4a4035;
+    border-radius: 2px;
     cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
 
   .preset-btn:hover {
-    background: rgba(74, 158, 255, 0.1);
-    border-color: #6ab2ff;
+    background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
+    border-color: #5a5040;
+    color: #d4c4a8;
   }
 </style>

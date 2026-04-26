@@ -74,8 +74,9 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    font-size: 13px;
-    color: #a0a0a0;
+    font-size: 12px;
+    color: #9a8a7a;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
   }
 
   .controls {
@@ -93,21 +94,29 @@
 
   .toggle-text {
     user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .clear-btn {
-    background: transparent;
-    border: 1px solid #ff4d4d;
-    color: #ff4d4d;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
+    background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
+    border: 1px solid #6a5040;
+    color: #d4a8a8;
+    border-radius: 2px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     cursor: pointer;
     transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .clear-btn:hover {
-    background: rgba(255, 77, 77, 0.1);
+    background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
+    border-color: #8a6050;
+    color: #e4c4c4;
   }
 
   .status-indicator {
@@ -123,7 +132,7 @@
   }
 
   .saving {
-    color: #4a9eff;
+    color: #a8b8c4;
     animation: pulse 1.5s infinite;
   }
 
@@ -131,7 +140,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: #4ade80;
+    color: #8cb484;
   }
 
   .check-icon {

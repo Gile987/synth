@@ -41,11 +41,11 @@
 
   function getCableColor(type: PortType | null): string {
     switch (type) {
-      case 'audio': return '#e74c3c';     // Red
-      case 'control': return '#3498db';   // Blue  
-      case 'gate': return '#2ecc71';      // Green
-      case 'trigger': return '#f39c12';   // Orange
-      default: return '#95a5a6';          // Gray
+      case 'audio': return '#c4847c';     // Worn red
+      case 'control': return '#7c8c9c';   // Faded blue  
+      case 'gate': return '#8cb484';      // Dull green
+      case 'trigger': return '#d4b47c';   // Aged orange
+      default: return '#8a7a6a';          // Worn brown-gray
     }
   }
 
@@ -116,14 +116,15 @@
 
   .cable {
     fill: none;
-    stroke-width: 3;
+    stroke-width: 2.5;
     stroke-linecap: round;
     pointer-events: none;
+    opacity: 0.85;
   }
 
   .cable.selected {
-    stroke-width: 5;
-    filter: drop-shadow(0 0 4px currentColor);
+    stroke-width: 4;
+    opacity: 1;
   }
 
   .cable-hit {
@@ -136,11 +137,12 @@
   }
 
   .cable-hit:hover + .cable {
-    stroke-width: 4;
+    stroke-width: 3.5;
+    opacity: 1;
   }
 
   .cable.temp {
-    stroke-dasharray: 8 4;
+    stroke-dasharray: 6 4;
     opacity: 0.7;
     pointer-events: none;
   }

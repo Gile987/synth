@@ -177,70 +177,109 @@
   .module {
     position: absolute;
     width: 220px;
-    background: #2a2a3e;
-    border: 1px solid #444;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(180deg, #4a4035 0%, #3a3025 50%, #2a2018 100%);
+    border: 2px solid #5a5040;
+    border-radius: 3px;
     cursor: default;
     user-select: none;
+    box-shadow: 
+      0 4px 15px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .module::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: #6a6050;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
   }
 
   .module.selected {
-    border-color: #4a9eff;
-    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+    border-color: #7a6a58;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.7),
+      0 0 0 2px rgba(200, 180, 140, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
   .module.dragging {
     z-index: 20;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.7),
+      0 0 20px rgba(200, 180, 140, 0.15);
   }
 
   .module-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
-    border-radius: 8px 8px 0 0;
+    padding: 14px 12px 10px;
+    border-radius: 3px 3px 0 0;
     cursor: grab;
     gap: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 16px;
   }
 
   .module-header:active {
     cursor: grabbing;
   }
 
-  .category-source { background: linear-gradient(135deg, #2a4a6e, #1a3a5e); }
-  .category-effect { background: linear-gradient(135deg, #4a2a6e, #3a1a5e); }
-  .category-output { background: linear-gradient(135deg, #6e2a2a, #5e1a1a); }
-  .category-modulation { background: linear-gradient(135deg, #2a6e4a, #1a5e3a); }
+  .category-source { 
+    background: linear-gradient(180deg, #3a4538 0%, #2a3528 100%);
+    color: #a8d4a8;
+  }
+  .category-effect { 
+    background: linear-gradient(180deg, #453a40 0%, #352a30 100%);
+    color: #d4a8b8;
+  }
+  .category-output { 
+    background: linear-gradient(180deg, #453830 0%, #352820 100%);
+    color: #d4b8a8;
+  }
+  .category-modulation { 
+    background: linear-gradient(180deg, #3a4045 0%, #2a3035 100%);
+    color: #a8b8d4;
+  }
 
   .title {
     flex: 1;
-    font-weight: 600;
-    font-size: 14px;
+    font-weight: 400;
   }
 
   .delete-btn {
-    width: 20px;
-    height: 20px;
-    border: none;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #6a5040;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
+    color: #d4a8a8;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1;
+    font-family: monospace;
   }
 
   .delete-btn:hover {
-    background: rgba(231, 76, 60, 0.8);
+    background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
+    border-color: #8a6050;
   }
 
   .module-body {
     padding: 12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 100%);
   }
 
   .ports-section {
@@ -262,40 +301,51 @@
   }
 
   .port-circle {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     cursor: crosshair;
-    border: 2px solid #555;
+    border: 2px solid;
     transition: all 0.2s;
     position: relative;
     z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 
   .port-circle:hover {
-    transform: scale(1.2);
-    border-color: #fff;
+    transform: scale(1.25);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
   }
 
-  .type-audio { background: #e74c3c; }
+  .type-audio { 
+    background: #c4847c; 
+    border-color: #8b5a52;
+  }
   .type-control { 
-    background: #3498db;
-    border-radius: 2px;
-    width: 12px;
-    height: 12px;
-    border: 2px solid #3498db;
+    border-radius: 1px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #7c8c9c;
     background: transparent;
   }
   .type-control:hover {
-    background: rgba(52, 152, 219, 0.3);
+    background: rgba(124, 140, 156, 0.3);
   }
-  .type-gate { background: #2ecc71; }
-  .type-trigger { background: #f39c12; }
+  .type-gate { 
+    background: #8cb484; 
+    border-color: #5a8452;
+  }
+  .type-trigger { 
+    background: #d4b47c; 
+    border-color: #9c7c44;
+  }
 
   .port-label {
-    font-size: 11px;
-    color: #aaa;
-    text-transform: capitalize;
+    font-size: 10px;
+    color: #9a8a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
   }
 
   .params-section {
@@ -311,25 +361,40 @@
   }
 
   .param label {
-    font-size: 11px;
-    color: #888;
-    text-transform: capitalize;
+    font-size: 10px;
+    color: #7a6a5a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
   }
 
   .param input,
   .param select {
     width: 100%;
     padding: 4px 8px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background: #1a1a2e;
-    color: #fff;
-    font-size: 12px;
+    border: 1px solid #5a5040;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
+    color: #c4b8a8;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
   }
 
   .param input[type="range"] {
     padding: 0;
-    height: 20px;
+    height: 4px;
+    border: none;
+    background: #3a3530;
+    -webkit-appearance: none;
+  }
+
+  .param input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+    background: #8a7a6a;
+    border: 1px solid #5a5040;
+    cursor: pointer;
   }
 
   .param input[type="checkbox"] {
@@ -352,8 +417,8 @@
     flex-shrink: 0;
     text-align: right;
     font-size: 11px;
-    color: #aaa;
-    font-family: monospace;
+    color: #a8d4a8;
+    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
