@@ -47,26 +47,24 @@
 </script>
 
 <div class="autosave-status">
-  <div class="controls">
-    <label class="toggle-label">
-      <input type="checkbox" checked={enabled} onchange={handleToggle} />
-      <span class="toggle-text">Auto-save</span>
-    </label>
-    <button class="clear-btn" onclick={handleClear}>Clear Session</button>
+  <div class="control-group">
+    <span class="group-label">Auto-save</span>
+    <div class="group-controls">
+      <label class="toggle-switch">
+        <input type="checkbox" checked={enabled} onchange={handleToggle} />
+        <span class="toggle-slider"></span>
+      </label>
+      {#if status === 'saving'}
+        <span class="status-text saving">Saving...</span>
+      {:else if status === 'saved' && lastSavedTime}
+        <span class="status-text saved">Saved {timeAgo}</span>
+      {:else}
+        <span class="status-text idle">{enabled ? 'On' : 'Off'}</span>
+      {/if}
+    </div>
   </div>
-
-  <div class="status-indicator" class:visible={enabled}>
-    {#if status === 'saving'}
-      <span class="saving">Auto-saving...</span>
-    {:else if status === 'saved' && lastSavedTime}
-      <span class="saved">
-        <svg class="check-icon" viewBox="0 0 24 24" width="14" height="14">
-          <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor"/>
-        </svg>
-        Saved {timeAgo}
-      </span>
-    {/if}
-  </div>
+  
+  <button class="clear-btn" onclick={handleClear}>Clear</button>
 </div>
 
 <style>
@@ -74,28 +72,92 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    font-size: 12px;
-    color: #9a8a7a;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
   }
 
-  .controls {
+  .control-group {
     display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .toggle-label {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 6px;
-    cursor: pointer;
   }
 
-  .toggle-text {
-    user-select: none;
+  .group-label {
+    font-size: 10px;
+    color: #7a6a5a;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .group-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
+    border: 1px solid #4a4035;
+    transition: 0.3s;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background: #8a7a6a;
+    transition: 0.3s;
+  }
+
+  input:checked + .toggle-slider {
+    background: linear-gradient(180deg, #3a4538 0%, #2a3528 100%);
+    border-color: #4a5548;
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+    background: #a8d4a8;
+  }
+
+  .status-text {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    min-width: 70px;
+    text-align: left;
+  }
+
+  .status-text.saving {
+    color: #a8b8c4;
+  }
+
+  .status-text.saved {
+    color: #8cb484;
+  }
+
+  .status-text.idle {
+    color: #9a8a7a;
   }
 
   .clear-btn {
@@ -117,39 +179,5 @@
     background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
     border-color: #8a6050;
     color: #e4c4c4;
-  }
-
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    min-width: 120px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .status-indicator.visible {
-    opacity: 1;
-  }
-
-  .saving {
-    color: #a8b8c4;
-    animation: pulse 1.5s infinite;
-  }
-
-  .saved {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: #8cb484;
-  }
-
-  .check-icon {
-    display: inline-block;
-  }
-
-  @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 1; }
-    100% { opacity: 0.6; }
   }
 </style>
