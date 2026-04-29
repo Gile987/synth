@@ -53,25 +53,34 @@ src/
     │   ├── port.ts          # Port creation helpers
     │   └── constants.ts     # Audio constants
     │
-    ├── modules/         # Concrete module implementations
-    │   ├── oscillator.ts    # OscillatorModule - sound source
+    ├── modules/         # Concrete module implementations (15 total)
+    │   ├── oscillator.ts    # OscillatorModule - sound source with multiple waveforms
+    │   ├── noise.ts        # NoiseModule - white, pink, brown noise generator
     │   ├── filter.ts       # FilterModule - frequency shaping with modulation
     │   ├── vca.ts          # VCAModule - amplitude control
+    │   ├── reverb.ts       # ReverbModule - convolution reverb
+    │   ├── delay.ts        # DelayModule - echo effect
+    │   ├── distortion.ts   # DistortionModule - wave shaping distortion
+    │   ├── multi-fx.ts     # MultiFxModule - ring mod, bit crush, wave folder, tremolo
     │   ├── lfo.ts          # LFOModule - low frequency modulation
     │   ├── adsr.ts         # ADSRModule - envelope generator with gate detection
     │   ├── sequencer.ts    # SequencerModule - step sequencer with scheduler
-    │   ├── output.ts       # OutputModule - master output
-    │   └── index.ts
+    │   ├── attenuverter.ts # AttenuverterModule - signal attenuator/inverter
+    │   ├── mixer.ts        # MixerModule - 4-channel audio mixer
+    │   ├── mult.ts         # MultModule - signal splitter (1 input → 4 outputs)
+    │   └── output.ts       # OutputModule - master output
     │
     ├── components/ui/   # Svelte UI components
-    │   ├── PatchBoard.svelte     # Main canvas with grid snapping
-    │   ├── Module.svelte         # Standard module UI
+    │   ├── PatchBoard.svelte      # Main canvas with grid snapping and auto-expansion
+    │   ├── Module.svelte          # Standard module UI
     │   ├── SequencerModule.svelte # Custom sequencer UI with step grid
-    │   ├── ModulePalette.svelte  # Add modules sidebar with help button
-    │   ├── CableLayer.svelte     # SVG cable overlay
-    │   ├── HelpModal.svelte      # Module help overlay
-    │   ├── HelpIcon.svelte       # Help trigger button
-    │   └── SynthHelpModal.svelte # Synthesis guide modal
+    │   ├── ModulePalette.svelte   # Add modules sidebar with categories and search
+    │   ├── CableLayer.svelte      # SVG cable overlay with repatching support
+    │   ├── HelpModal.svelte       # Module help overlay
+    │   ├── HelpIcon.svelte        # Help trigger button
+    │   ├── SynthHelpModal.svelte  # Synthesis guide modal
+    │   ├── PresetBrowser.svelte   # Save/load/export presets
+    │   └── AutosaveStatus.svelte  # Auto-save toggle and status display
     │
     ├── stores/          # State management
     │   ├── patch.ts      # Svelte stores
@@ -217,10 +226,11 @@ All stores in `/src/lib/stores/patch.ts`:
 
 ## Current Module Set
 
-- Source: Oscillator, Noise
-- Effect: Filter, VCA
-- Modulation: LFO, ADSR, Sequencer
-- Output: Output
+- **Source (2)**: Oscillator, Noise
+- **Effect (6)**: Filter, VCA, Reverb, Delay, Distortion, Multi-FX
+- **Modulation (4)**: LFO, ADSR, Sequencer, Attenuverter
+- **Utility (2)**: Mixer, Mult
+- **Output (1)**: Output
 
 ## Module Definition
 
@@ -230,7 +240,7 @@ Each module has a definition object:
 interface ModuleDefinition {
   type: string              // unique identifier
   label: string            // display name
-  category: 'source' | 'effect' | 'output'
+  category: 'source' | 'effect' | 'modulation' | 'utility' | 'output'
   ports: PortDefinition[]
   params: ParamDefinition[]
   help: HelpContent
@@ -339,12 +349,6 @@ import { YourModule, YOUR_MODULE_DEFINITION } from '$modules/your-module'
 
 // In registerModules():
 this.registry.register(YOUR_MODULE_DEFINITION, (id) => new YourModule(id))
-```
-
-3. **Export from index** at `/src/lib/modules/index.ts`:
-
-```typescript
-export { YourModule, YOUR_MODULE_DEFINITION } from './your-module'
 ```
 
 The module will automatically appear in the ModulePalette sidebar.
