@@ -23,7 +23,7 @@ export const MIXER_HELP = {
 export const MIXER_DEFINITION: ModuleDefinition = {
   type: 'mixer',
   label: 'Mixer',
-  category: 'effect',
+  category: 'utility',
   version: '1.0.0',
   ports: [
     { name: 'input1', type: 'audio', direction: 'input' },
