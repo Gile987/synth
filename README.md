@@ -5,7 +5,7 @@ A browser-based modular synthesizer built with Svelte 5 and the Web Audio API.
 ## What Is This?
 
 A virtual modular synthesizer where you can:
-- Add oscillator, noise, filter, VCA, envelope, LFO, sequencer, and output modules
+- Add 15 different modules: oscillators, noise, filters, effects, LFOs, ADSR envelopes, sequencers, utilities, and more
 - Connect modules with virtual cables
 - Create rhythmic patterns with the step sequencer
 - Shape sounds with ADSR envelopes and filters
@@ -39,13 +39,14 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **VCA** | Effect | Voltage Controlled Amplifier for amplitude shaping |
 | **Reverb** | Effect | Convolution reverb with programmable impulse responses |
 | **Delay** | Effect | Echo effect with time, feedback, and mix controls |
-| **Mixer** | Effect | 4-channel audio mixer with individual levels and master output |
 | **Distortion** | Effect | Wave shaping distortion with adjustable drive and mix |
+| **Multi-FX** | Effect | Ring modulator, bit crusher, wave folder, and tremolo with mix control |
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
 | **ADSR** | Modulation | Envelope generator with gate input and auto-trigger |
 | **Sequencer** | Modulation | 16-step sequencer with gate/trigger outputs |
 | **Attenuverter** | Modulation | Signal attenuator and inverter for modulation depth control |
-| **Multi-FX** | Effect | Ring modulator, bit crusher, wave folder, and tremolo with mix control |
+| **Mixer** | Utility | 4-channel audio mixer with individual levels and master output |
+| **Mult** | Utility | Signal splitter - duplicates one input to four outputs |
 | **Output** | Output | Master gain with mute to speakers |
 
 ## Project Structure
@@ -57,8 +58,8 @@ src/
 └── lib/
     ├── content/         # Educational content (synthesis help guide)
     ├── core/            # Audio engine (registry, patch-engine, base-module)
-    ├── modules/         # Synth modules (oscillator, noise, filter, vca, lfo, adsr, sequencer, output)
-    ├── components/ui/   # Svelte UI components (Module, PatchBoard, SequencerModule, SynthHelpModal, etc.)
+    ├── modules/         # Synth modules (15 total: oscillator, noise, filter, vca, reverb, delay, distortion, multi-fx, lfo, adsr, sequencer, attenuverter, mixer, mult, output)
+    ├── components/ui/   # Svelte UI components (Module, PatchBoard, CableLayer, SequencerModule, ModulePalette, SynthHelpModal, PresetBrowser, AutosaveStatus, etc.)
     ├── stores/          # State management
     └── types/           # TypeScript definitions
 ```

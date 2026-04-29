@@ -23,14 +23,31 @@ Click **Click to Start Audio**. Browser security requires a user gesture before 
 ### 2. Add Modules
 
 Click any module button in the left sidebar:
-- **Oscillator** - Sound source
+
+**Sources:**
+- **Oscillator** - Sound source with multiple waveforms
 - **Noise** - White, pink, or brown noise for percussion and textures
-- **Filter** - Shapes the sound
+
+**Effects:**
+- **Filter** - Shapes the sound with various filter types
 - **VCA** - Controls amplitude/loudness
-- **LFO** - Low frequency modulation
+- **Reverb** - Convolution reverb with programmable impulse responses
+- **Delay** - Echo effect with time, feedback, and mix controls
+- **Distortion** - Wave shaping distortion with drive and mix
+- **Multi-FX** - Ring modulator, bit crusher, wave folder, and tremolo
+
+**Modulation:**
+- **LFO** - Low frequency oscillator for modulation effects
 - **ADSR** - Envelope generator for shaping dynamics
-- **Sequencer** - Creates rhythmic patterns
-- **Output** - Sends to speakers
+- **Sequencer** - 16-step sequencer for rhythmic patterns
+- **Attenuverter** - Signal attenuator and inverter for modulation depth
+
+**Utilities:**
+- **Mixer** - 4-channel audio mixer with individual levels and master
+- **Mult** - Signal splitter (duplicates one input to four outputs)
+
+**Output:**
+- **Output** - Master gain and mute to speakers
 
 **Get Help:** Click the **❓ How does this work?** button at the bottom of the sidebar for a comprehensive synthesis guide.
 
@@ -209,6 +226,110 @@ Attack-Decay-Sustain-Release envelope generator shapes sound over time.
 - Off-beats: Steps 3, 7, 11, 15
 
 **Visual feedback:** The yellow step highlight shows the step currently being played.
+
+### Reverb
+
+Convolution reverb with programmable impulse responses for adding space and depth.
+
+**Parameters:**
+- **Type** (hall, room, plate, spring, cathedral) - Reverb algorithm
+- **Decay** (0.1 - 10 sec) - How long the reverb tail lasts
+- **Mix** (0 - 1) - Balance between dry and wet signal
+
+**Ports:**
+- **Input** (audio) - Sound to add reverb to
+- **Output** (audio) - Reverberated sound
+
+**Usage:** Place at the end of your signal chain before Output for ambient space effects.
+
+### Delay
+
+Echo effect with adjustable time, feedback, and mix.
+
+**Parameters:**
+- **Time** (0.01 - 2 sec) - Delay time between echoes
+- **Feedback** (0 - 0.95) - How much of the delayed signal feeds back (higher = more echoes)
+- **Mix** (0 - 1) - Balance between dry and wet signal
+
+**Ports:**
+- **Input** (audio) - Sound to delay
+- **Output** (audio) - Delayed sound with echoes
+
+**Usage:** Create rhythmic echoes, slapback effects, or ambient washes.
+
+### Distortion
+
+Wave shaping distortion for adding grit and harmonics.
+
+**Parameters:**
+- **Drive** (0 - 1) - Amount of distortion
+- **Mix** (0 - 1) - Balance between clean and distorted signal
+
+**Ports:**
+- **Input** (audio) - Sound to distort
+- **Output** (audio) - Distorted sound
+
+**Usage:** Add warmth, aggression, or fuzz to any sound source.
+
+### Multi-FX
+
+Four different effects in one module: ring modulator, bit crusher, wave folder, and tremolo.
+
+**Parameters:**
+- **Effect** (ring mod, bit crush, wave folder, tremolo) - Select which effect to use
+- **Amount** (0 - 1) - Effect intensity
+- **Rate** (0.1 - 20 Hz) - Speed for tremolo effect
+- **Mix** (0 - 1) - Balance between dry and wet signal
+
+**Ports:**
+- **Input** (audio) - Sound to process
+- **Output** (audio) - Processed sound
+
+**Usage:** Experimental sound mangling and texture creation.
+
+### Attenuverter
+
+Attenuates (reduces) and/or inverts modulation signals. Essential for controlling modulation depth and polarity.
+
+**Parameters:**
+- **Amount** (-1 to +1) - Signal scaling factor
+  - +1.0: Full signal passes through unchanged
+  - +0.5: Signal reduced by half
+  - 0.0: No signal (silence)
+  - -0.5: Signal reduced and inverted
+  - -1.0: Full inverted signal
+
+**Ports:**
+- **Input** (audio/control) - Signal to attenuate/invert
+- **Output** (audio/control) - Scaled signal
+
+**Usage:** Place between a modulation source (LFO, envelope) and destination to control how much effect the modulation has. Use negative values to invert the modulation direction.
+
+### Mixer
+
+4-channel audio mixer with individual level controls and master output.
+
+**Parameters:**
+- **Level 1-4** (0 - 1) - Individual channel volumes
+- **Master** (0 - 1) - Overall output volume
+
+**Ports:**
+- **Input 1-4** (audio) - Up to four sound sources
+- **Output** (audio) - Mixed output
+
+**Usage:** Combine multiple oscillators for thick sounds, blend different effects, or create sub-mixes before the Output module.
+
+### Mult
+
+Signal splitter - duplicates one input to four identical outputs.
+
+**Parameters:** None
+
+**Ports:**
+- **Input** (audio/control) - Signal to split
+- **Out 1-4** (audio/control) - Four identical copies of the input
+
+**Usage:** Send one LFO to multiple destinations simultaneously, or split an oscillator to multiple effects. All outputs carry the exact same signal with no degradation.
 
 ### Output
 
