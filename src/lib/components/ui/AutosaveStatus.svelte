@@ -82,10 +82,10 @@
 
   .group-label {
     font-size: 10px;
-    color: #7a6a5a;
+    color: #a09080;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .group-controls {
@@ -143,31 +143,32 @@
 
   .status-text {
     font-size: 11px;
-    font-family: 'IBM Plex Mono', monospace;
-    min-width: 70px;
+    font-family: 'JetBrains Mono', monospace;
+    width: 95px;
     text-align: left;
+    white-space: nowrap;
   }
 
   .status-text.saving {
-    color: #a8b8c4;
+    color: #c8d8e8;
   }
 
   .status-text.saved {
-    color: #8cb484;
+    color: #a8d4a8;
   }
 
   .status-text.idle {
-    color: #9a8a7a;
+    color: #b0a090;
   }
 
   .clear-btn {
     background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
     border: 1px solid #6a5040;
-    color: #d4a8a8;
+    color: #f0d8d8;
     border-radius: 2px;
     padding: 6px 10px;
     font-size: 11px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     transition: all 0.2s;
     text-transform: uppercase;
@@ -178,6 +179,6 @@
   .clear-btn:hover {
     background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
     border-color: #8a6050;
-    color: #e4c4c4;
+    color: #f8e8e8;
   }
 </style>

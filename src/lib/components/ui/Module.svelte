@@ -224,31 +224,32 @@
     cursor: grab;
     gap: 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 16px;
+    letter-spacing: 1px;
+    font-size: 15px;
+    font-weight: 500;
   }
 
   .module-header:active {
     cursor: grabbing;
   }
 
-  .category-source { 
+  .category-source {
     background: linear-gradient(180deg, #3a4538 0%, #2a3528 100%);
-    color: #a8d4a8;
+    color: #c8e8c8;
   }
-  .category-effect { 
+  .category-effect {
     background: linear-gradient(180deg, #453a40 0%, #352a30 100%);
-    color: #d4a8b8;
+    color: #e8c8d0;
   }
-  .category-output { 
+  .category-output {
     background: linear-gradient(180deg, #453830 0%, #352820 100%);
-    color: #d4b8a8;
+    color: #f0e0d8;
   }
-  .category-modulation { 
+  .category-modulation {
     background: linear-gradient(180deg, #3a4045 0%, #2a3035 100%);
-    color: #a8b8d4;
+    color: #c8d8e8;
   }
 
   .title {
@@ -269,7 +270,7 @@
     justify-content: center;
     font-size: 14px;
     line-height: 1;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .delete-btn:hover {
@@ -342,10 +343,10 @@
 
   .port-label {
     font-size: 10px;
-    color: #9a8a7a;
+    color: #b0a090;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .params-section {
@@ -362,10 +363,10 @@
 
   .param label {
     font-size: 10px;
-    color: #7a6a5a;
+    color: #a09080;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .param input,
@@ -375,9 +376,9 @@
     border: 1px solid #5a5040;
     border-radius: 2px;
     background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
-    color: #c4b8a8;
+    color: #e8ddd0;
     font-size: 11px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .param input[type="range"] {
@@ -418,7 +419,7 @@
     text-align: right;
     font-size: 11px;
     color: #a8d4a8;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

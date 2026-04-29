@@ -235,10 +235,11 @@
   .modal-header h2 {
     margin: 0;
     font-size: 20px;
-    color: #d4c4a8;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    color: #f0e8dc;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
+    font-weight: 500;
   }
 
   .close-btn {
@@ -247,13 +248,13 @@
     border: 1px solid #5a5040;
     border-radius: 2px;
     background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
-    color: #c4b8a8;
+    color: #e8ddd0;
     font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .close-btn:hover {
@@ -264,9 +265,9 @@
 
   .modal-body {
     padding: 20px;
-    color: #c4b8a8;
+    color: #e8ddd0;
     line-height: 1.6;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   section {
@@ -280,10 +281,11 @@
   h3 {
     margin: 0 0 12px 0;
     font-size: 12px;
-    color: #a8b8c4;
+    color: #c8d8e8;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
   }
 
   /* Save Section */
@@ -298,9 +300,9 @@
     border: 1px solid #4a4035;
     border-radius: 2px;
     background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 13px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .save-row input:focus {
@@ -320,11 +322,11 @@
     border: 1px solid #4a4035;
     border-radius: 2px;
     background: linear-gradient(180deg, #5a5040 0%, #4a4035 100%);
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -340,10 +342,10 @@
     border: 1px solid #4a4035;
     border-radius: 2px;
     background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
-    color: #b4a898;
+    color: #d8d0c4;
     font-size: 12px;
     cursor: pointer;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -351,7 +353,7 @@
   .btn-secondary:hover {
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
     border-color: #5a5040;
-    color: #d4c4a8;
+    color: #f0e8dc;
   }
 
   /* File Section */
@@ -362,7 +364,7 @@
 
   /* Preset List */
   .empty-text {
-    color: #7a6a5a;
+    color: #a09080;
     font-style: italic;
     margin: 0;
   }
@@ -394,7 +396,7 @@
 
   .preset-name {
     font-weight: 500;
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 13px;
   }
 
@@ -404,18 +406,18 @@
     border-radius: 2px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .preset-badge.default {
     background: #3a4538;
-    color: #a8c4a8;
+    color: #c8e8c8;
     border: 1px solid #4a5548;
   }
 
   .preset-badge.saved {
     background: #3a4035;
-    color: #c4c4a8;
+    color: #e8e8e0;
     border: 1px solid #4a5045;
   }
 
@@ -429,17 +431,17 @@
     border: 1px solid #4a4035;
     border-radius: 2px;
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
-    color: #c4b8a8;
+    color: #e8ddd0;
     font-size: 11px;
     cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
   }
 
   .btn-load:hover {
     background: linear-gradient(180deg, #5a5045 0%, #4a4035 100%);
     border-color: #6a6050;
-    color: #d4c8b8;
+    color: #f0e8dc;
   }
 
   .btn-delete {
@@ -447,16 +449,16 @@
     border: 1px solid #6a5040;
     border-radius: 2px;
     background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
-    color: #d4a8a8;
+    color: #f0d8d8;
     font-size: 11px;
     cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
   }
 
   .btn-delete:hover {
     background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
     border-color: #8a6050;
-    color: #e4c4c4;
+    color: #f8e8e8;
   }
 </style>
