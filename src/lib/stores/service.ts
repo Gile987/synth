@@ -14,6 +14,7 @@ import { MixerModule, MIXER_DEFINITION } from '$modules/mixer';
 import { DistortionModule, DISTORTION_DEFINITION } from '$modules/distortion';
 import { AttenuverterModule, ATTENUVERTER_DEFINITION } from '$modules/attenuverter';
 import { MultiFxModule, MULTI_FX_DEFINITION } from '$modules/multi-fx';
+import { MultModule, MULT_DEFINITION } from '$modules/mult';
 import { modules, connections, moduleDefinitions } from './patch';
 import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
 
@@ -45,6 +46,7 @@ class SynthService {
     this.registry.register(DISTORTION_DEFINITION, (id) => new DistortionModule(id));
     this.registry.register(ATTENUVERTER_DEFINITION, (id) => new AttenuverterModule(id));
     this.registry.register(MULTI_FX_DEFINITION, (id) => new MultiFxModule(id));
+    this.registry.register(MULT_DEFINITION, (id) => new MultModule(id));
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
