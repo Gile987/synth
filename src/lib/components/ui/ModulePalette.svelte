@@ -172,15 +172,14 @@
 
   h2 {
     margin: 0 0 12px 0;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     font-size: 16px;
-    font-weight: 400;
-    color: #c4b8a8;
+    font-weight: 500;
+    color: #f0e8dc;
     text-transform: uppercase;
     letter-spacing: 3px;
     border-bottom: 1px solid #4a4035;
     padding-bottom: 10px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
   }
 
   .search-container {
@@ -190,13 +189,13 @@
 
   .search-input {
     width: 100%;
-    padding: 8px 28px 8px 10px;
+    padding: 10px 28px 10px 10px;
     border: 1px solid #4a4035;
     border-radius: 2px;
     background: linear-gradient(180deg, #2a2018 0%, #1a1510 100%);
-    color: #c4b8a8;
-    font-size: 11px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #f0e8dc;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
     box-sizing: border-box;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -238,13 +237,13 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 6px;
+    padding: 10px 8px;
     border: 1px solid transparent;
     border-radius: 2px;
     background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
-    color: #b4a898;
-    font-size: 11px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #d8d0c4;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     text-align: left;
     text-transform: uppercase;
@@ -255,17 +254,17 @@
   .category-header:hover {
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
     border-color: #5a5040;
-    color: #d4c4a8;
+    color: #f0e8dc;
   }
 
   .category-header.collapsed {
     background: linear-gradient(180deg, #2a2520 0%, #1a1510 100%);
-    color: #8a8070;
+    color: #a09888;
   }
 
   .category-icon {
-    font-size: 12px;
-    width: 16px;
+    font-size: 14px;
+    width: 18px;
     text-align: center;
     color: #8a9c8a;
   }
@@ -291,13 +290,13 @@
   }
 
   .category-count {
-    color: #6a6050;
-    font-size: 10px;
+    color: #908070;
+    font-size: 11px;
   }
 
   .expand-icon {
-    font-size: 8px;
-    color: #6a6050;
+    font-size: 10px;
+    color: #908070;
     transition: transform 0.2s;
   }
 
@@ -311,13 +310,13 @@
   }
 
   .module-button {
-    padding: 6px 10px;
+    padding: 8px 12px;
     border: 1px solid #3a3025;
     border-radius: 2px;
     background: linear-gradient(180deg, #322820 0%, #242018 100%);
-    color: #a49c88;
-    font-size: 10px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #c8c0b4;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     text-align: left;
     text-transform: uppercase;
@@ -328,15 +327,15 @@
   .module-button:hover {
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
     border-color: #5a5040;
-    color: #d4c4a8;
+    color: #f0e8dc;
   }
 
   .no-results {
     padding: 20px 10px;
     text-align: center;
-    color: #6a6050;
-    font-size: 10px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #908070;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
@@ -349,17 +348,17 @@
 
   .help-button {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     border: 1px solid #5a5040;
     border-radius: 2px;
     background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
-    color: #c4b8a8;
-    font-size: 10px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #e8ddd0;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -368,10 +367,10 @@
   .help-button:hover {
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
     border-color: #6a6050;
-    color: #d4c4a8;
+    color: #f0e8dc;
   }
 
   .help-icon {
-    font-size: 12px;
+    font-size: 14px;
   }
 </style>

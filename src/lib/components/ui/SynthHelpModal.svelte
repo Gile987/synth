@@ -146,10 +146,11 @@
   .modal-header h2 {
     margin: 0;
     font-size: 20px;
-    color: #d4c4a8;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    color: #f0e8dc;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
+    font-weight: 500;
   }
 
   .close-btn {
@@ -158,19 +159,19 @@
     border: 1px solid #5a5040;
     border-radius: 2px;
     background: linear-gradient(180deg, #5a4035 0%, #4a3025 100%);
-    color: #c4b8a8;
+    color: #e8ddd0;
     font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .close-btn:hover {
     background: linear-gradient(180deg, #6a5045 0%, #5a4035 100%);
     border-color: #7a6050;
-    color: #e4d4b8;
+    color: #f0e8dc;
   }
 
   .tabs {
@@ -184,22 +185,22 @@
     padding: 14px 20px;
     border: none;
     background: transparent;
-    color: #9a8a7a;
+    color: #b0a090;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
 
   .tab:hover {
-    color: #c4b8a8;
+    color: #e8ddd0;
     background: rgba(255, 255, 255, 0.02);
   }
 
   .tab.active {
-    color: #a8b8c4;
+    color: #c8d8e8;
     border-bottom: 2px solid #5a5040;
     background: rgba(74, 84, 94, 0.1);
   }
@@ -208,7 +209,7 @@
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .help-sections {
@@ -229,14 +230,14 @@
     padding: 14px 18px;
     border: none;
     background: transparent;
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .section-header:hover {
@@ -245,8 +246,8 @@
 
   .expand-icon {
     font-size: 18px;
-    color: #8a7a6a;
-    font-family: monospace;
+    color: #a09080;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .section-content {
@@ -255,7 +256,7 @@
   }
 
   .section-description {
-    color: #b4a898;
+    color: #d8d0c4;
     font-size: 13px;
     line-height: 1.6;
     margin: 14px 0;
@@ -271,7 +272,7 @@
     padding: 6px 0;
     padding-left: 20px;
     position: relative;
-    color: #c4b8a8;
+    color: #e8ddd0;
     font-size: 12px;
     line-height: 1.5;
     border-bottom: 1px solid #3a3530;
@@ -285,8 +286,8 @@
     content: '>';
     position: absolute;
     left: 0;
-    color: #8a7a6a;
-    font-family: monospace;
+    color: #a09080;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .getting-started {
@@ -309,15 +310,15 @@
     height: 32px;
     border-radius: 50%;
     background: linear-gradient(180deg, #4a4035 0%, #3a3025 100%);
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     border: 1px solid #5a5040;
-    font-family: 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .step-content {
@@ -326,13 +327,14 @@
 
   .step-content h3 {
     margin: 0 0 6px 0;
-    color: #d4c4a8;
+    color: #f0e8dc;
     font-size: 16px;
-    font-family: 'Space Mono', monospace;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
   }
 
   .step-description {
-    color: #9a8a7a;
+    color: #b0a090;
     font-size: 12px;
     margin: 0 0 10px 0;
     line-height: 1.5;
@@ -344,7 +346,7 @@
   }
 
   .step-list li {
-    color: #b4a898;
+    color: #d8d0c4;
     font-size: 12px;
     padding: 3px 0;
     line-height: 1.5;

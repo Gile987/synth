@@ -297,15 +297,12 @@
   .patch-board {
     position: relative;
     background: 
-      /* Subtle grid like old engineering paper */
+      /* Subtle grid like old engineering paper - tiles */
       linear-gradient(rgba(139, 125, 107, 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(139, 125, 107, 0.05) 1px, transparent 1px),
-      /* Coffee stains and wear marks */
-      radial-gradient(circle at 15% 25%, rgba(160, 140, 120, 0.03) 0%, transparent 30%),
-      radial-gradient(circle at 75% 65%, rgba(140, 130, 110, 0.02) 0%, transparent 25%),
-      /* Warm worn desk surface */
-      linear-gradient(180deg, #2a2520 0%, #1a1815 50%, #151210 100%);
-    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%, 100% 100%;
+      /* Warm base color */
+      #1a1815;
+    background-size: 40px 40px, 40px 40px, 100% 100%;
     transition: width 0.2s ease, height 0.2s ease;
     min-width: 100%;
     min-height: 100%;

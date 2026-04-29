@@ -182,7 +182,12 @@
 </div>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :global(body) {
+    margin: 0;
+    padding: 0;
+  }
 
   .app {
     display: flex;
@@ -195,8 +200,8 @@
       linear-gradient(180deg, #2a2520 0%, #1a1815 50%, #0f0e0c 100%);
     background-size: 200px 200px, 100% 100%;
     background-blend-mode: overlay, normal;
-    color: #c4b8a8;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    color: #e8ddd0;
+    font-family: 'Inter', sans-serif;
     position: relative;
     overflow: hidden;
   }
@@ -217,10 +222,10 @@
 
   .toolbar h1 {
     margin: 0;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     font-size: 24px;
-    font-weight: 700;
-    color: #d4c4a8;
+    font-weight: 600;
+    color: #f0e8dc;
     text-transform: uppercase;
     letter-spacing: 3px;
   }
@@ -243,14 +248,14 @@
     font-weight: 400;
     font-size: 14px;
     z-index: 1000;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
 
   .error {
     color: #d4a8a8;
     font-size: 13px;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .main-content {
@@ -281,7 +286,7 @@
     flex: 1;
     font-size: 16px;
     color: #8a7a6a;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
   }
 
   .start-screen {
@@ -296,7 +301,7 @@
   .start-btn {
     padding: 20px 48px;
     font-size: 20px;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 4px;
     background: 
@@ -340,14 +345,14 @@
     color: #7a6a5a;
     font-size: 14px;
     margin: 0;
-    font-family: 'IBM Plex Mono', 'Space Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     opacity: 0.8;
   }
 
   .preset-btn {
     padding: 8px 16px;
     font-size: 14px;
-    font-family: 'Space Mono', 'IBM Plex Mono', monospace;
+    font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 2px;
     background: linear-gradient(180deg, #3a3025 0%, #2a2018 100%);
