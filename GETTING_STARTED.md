@@ -45,6 +45,7 @@ Click any module button in the left sidebar:
 **Utilities:**
 - **Mixer** - 4-channel audio mixer with individual levels and master
 - **Mult** - Signal splitter (duplicates one input to four outputs)
+- **Scope** - Real-time oscilloscope for visualizing waveforms
 
 **Output:**
 - **Output** - Master gain and mute to speakers
@@ -330,6 +331,20 @@ Signal splitter - duplicates one input to four identical outputs.
 - **Out 1-4** (audio/control) - Four identical copies of the input
 
 **Usage:** Send one LFO to multiple destinations simultaneously, or split an oscillator to multiple effects. All outputs carry the exact same signal with no degradation.
+
+### Scope
+
+Real-time oscilloscope for visualizing audio and modulation signals.
+
+**Parameters:**
+- **Time Scale** (0.1 - 5) - Zoom level for the waveform display
+- **Gain** (0.1 - 5) - Vertical amplification of the signal
+- **Freeze** (toggle) - Pause the display to examine a specific moment
+
+**Ports:**
+- **Input** (audio) - Signal to visualize
+
+**Usage:** Connect any audio or modulation source to see the waveform in real-time. Use Time Scale to zoom in/out, Gain to adjust amplitude, and Freeze to pause on a specific waveform shape. Great for debugging patches, verifying LFO shapes, checking envelope timing, and seeing oscillator waveforms.
 
 ### Output
 
