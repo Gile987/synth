@@ -77,7 +77,11 @@ class PresetManager {
       input.accept = '.json,application/json';
 
       input.onchange = (e) => {
-        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!(e.target instanceof HTMLInputElement)) {
+          resolve(null);
+          return;
+        }
+        const file = e.target.files?.[0];
         if (!file) {
           resolve(null);
           return;
@@ -86,8 +90,11 @@ class PresetManager {
         const reader = new FileReader();
         reader.onload = (event) => {
           try {
-            const content = event.target?.result as string;
-            const state = JSON.parse(content) as PatchState;
+            const content = event.target?.result;
+            if (typeof content !== 'string') {
+              throw new Error('File content is not a string');
+            }
+            const state: unknown = JSON.parse(content);
             
             if (!this.validatePatchState(state)) {
               throw new Error('Invalid patch file format');
@@ -117,29 +124,35 @@ class PresetManager {
    */
   private validatePatchState(state: unknown): state is PatchState {
     if (typeof state !== 'object' || state === null) return false;
-    const patch = state as PatchState;
     
-    if (!Array.isArray(patch.modules)) return false;
-    if (!Array.isArray(patch.connections)) return false;
-    if (typeof patch.version !== 'string') return false;
+    const candidate = state as Record<string, unknown>;
+    
+    if (!Array.isArray(candidate.modules)) return false;
+    if (!Array.isArray(candidate.connections)) return false;
+    if (typeof candidate.version !== 'string') return false;
 
     // Validate modules
-    for (const mod of patch.modules) {
-      if (typeof mod.id !== 'string') return false;
-      if (typeof mod.type !== 'string') return false;
-      if (typeof mod.position !== 'object' || mod.position === null) return false;
-      if (typeof mod.position.x !== 'number') return false;
-      if (typeof mod.position.y !== 'number') return false;
-      if (typeof mod.params !== 'object' || mod.params === null) return false;
+    for (const mod of candidate.modules) {
+      if (typeof mod !== 'object' || mod === null) return false;
+      const module = mod as Record<string, unknown>;
+      if (typeof module.id !== 'string') return false;
+      if (typeof module.type !== 'string') return false;
+      if (typeof module.position !== 'object' || module.position === null) return false;
+      const position = module.position as Record<string, unknown>;
+      if (typeof position.x !== 'number') return false;
+      if (typeof position.y !== 'number') return false;
+      if (typeof module.params !== 'object' || module.params === null) return false;
     }
 
     // Validate connections
-    for (const conn of patch.connections) {
-      if (typeof conn.id !== 'string') return false;
-      if (typeof conn.sourceModuleId !== 'string') return false;
-      if (typeof conn.sourcePortName !== 'string') return false;
-      if (typeof conn.targetModuleId !== 'string') return false;
-      if (typeof conn.targetPortName !== 'string') return false;
+    for (const conn of candidate.connections) {
+      if (typeof conn !== 'object' || conn === null) return false;
+      const connection = conn as Record<string, unknown>;
+      if (typeof connection.id !== 'string') return false;
+      if (typeof connection.sourceModuleId !== 'string') return false;
+      if (typeof connection.sourcePortName !== 'string') return false;
+      if (typeof connection.targetModuleId !== 'string') return false;
+      if (typeof connection.targetPortName !== 'string') return false;
     }
 
     return true;
@@ -225,6 +238,17 @@ class PresetManager {
   }
 
   /**
+   * Validate stored presets structure
+   */
+  private isValidStoredPresets(value: unknown): value is StoredPresets {
+    if (typeof value !== 'object' || value === null) return false;
+    const candidate = value as Record<string, unknown>;
+    if (typeof candidate.presets !== 'object' || candidate.presets === null) return false;
+    if (typeof candidate.lastModified !== 'string') return false;
+    return true;
+  }
+
+  /**
    * Get stored presets from localStorage
    */
   private getStoredPresets(): StoredPresets {
@@ -233,7 +257,11 @@ class PresetManager {
       if (!raw) {
         return { presets: {}, lastModified: new Date().toISOString() };
       }
-      return JSON.parse(raw) as StoredPresets;
+      const parsed: unknown = JSON.parse(raw);
+      if (!this.isValidStoredPresets(parsed)) {
+        return { presets: {}, lastModified: new Date().toISOString() };
+      }
+      return parsed;
     } catch {
       return { presets: {}, lastModified: new Date().toISOString() };
     }

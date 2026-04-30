@@ -75,6 +75,12 @@ declare module '$stores' {
     close: () => void;
   };
   
+  // Interface for module instances with sequencer capabilities
+  interface ModuleInstanceWithSequencer {
+    getStepPattern(): readonly boolean[];
+    setStep(index: number, value: boolean): void;
+  }
+
   export class SynthService {
     registerModules(): void;
     initializeAudio(): Promise<void>;
@@ -82,7 +88,7 @@ declare module '$stores' {
     removeModule(id: string): void;
     updateModulePosition(id: string, position: Position): void;
     setModuleParam(id: string, name: string, value: ParamValue): void;
-    getModuleInstance(id: string): { getStepPattern?: () => readonly boolean[]; setStep?: (index: number, value: boolean) => void } | undefined;
+    getModuleInstance(id: string): ModuleInstanceWithSequencer | undefined;
     connect(sourceModuleId: string, sourcePortName: string, targetModuleId: string, targetPortName: string): Connection;
     disconnect(connectionId: string): void;
     dispose(): void;
@@ -112,26 +118,26 @@ declare module '$stores' {
 }
 
 declare module '$core/*' {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
 
 declare module '$modules/*' {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
 
 declare module '$components/*' {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
 
 declare module '$lib/*' {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
 
 declare module '$content/*' {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
