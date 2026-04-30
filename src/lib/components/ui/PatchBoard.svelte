@@ -2,6 +2,7 @@
   import { modules, connections, moduleDefinitions, dragState, cableState, selectedModuleId, selectedConnectionId, synthService } from '$stores';
   import Module from './Module.svelte';
   import SequencerModule from './SequencerModule.svelte';
+  import ScopeModule from './ScopeModule.svelte';
   import CableLayer from './CableLayer.svelte';
   import type { Position, PortType, ModuleDefinition, ModuleInstance, Connection } from '$types';
 
@@ -265,6 +266,15 @@
       {#if def}
         {#if module.type === 'sequencer'}
           <SequencerModule
+            {module}
+            definition={def}
+            isDragging={$dragState?.moduleId === module.id}
+            onDragStart={(e) => handleModuleDragStart(module.id, e)}
+            onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
+            onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
+          />
+        {:else if module.type === 'scope'}
+          <ScopeModule
             {module}
             definition={def}
             isDragging={$dragState?.moduleId === module.id}

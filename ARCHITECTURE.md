@@ -53,7 +53,7 @@ src/
     │   ├── port.ts          # Port creation helpers
     │   └── constants.ts     # Audio constants
     │
-    ├── modules/         # Concrete module implementations (15 total)
+    ├── modules/         # Concrete module implementations (16 total)
     │   ├── oscillator.ts    # OscillatorModule - sound source with multiple waveforms
     │   ├── noise.ts        # NoiseModule - white, pink, brown noise generator
     │   ├── filter.ts       # FilterModule - frequency shaping with modulation
@@ -66,9 +66,10 @@ src/
     │   ├── adsr.ts         # ADSRModule - envelope generator with gate detection
     │   ├── sequencer.ts    # SequencerModule - step sequencer with scheduler
     │   ├── attenuverter.ts # AttenuverterModule - signal attenuator/inverter
-    │   ├── mixer.ts        # MixerModule - 4-channel audio mixer
-    │   ├── mult.ts         # MultModule - signal splitter (1 input → 4 outputs)
-    │   └── output.ts       # OutputModule - master output
+│   ├── mixer.ts        # MixerModule - 4-channel audio mixer
+│   ├── mult.ts         # MultModule - signal splitter (1 input → 4 outputs)
+│   ├── scope.ts        # ScopeModule - real-time oscilloscope
+│   └── output.ts       # OutputModule - master output
     │
     ├── components/ui/   # Svelte UI components
     │   ├── PatchBoard.svelte      # Main canvas with grid snapping and auto-expansion
@@ -229,7 +230,7 @@ All stores in `/src/lib/stores/patch.ts`:
 - **Source (2)**: Oscillator, Noise
 - **Effect (6)**: Filter, VCA, Reverb, Delay, Distortion, Multi-FX
 - **Modulation (4)**: LFO, ADSR, Sequencer, Attenuverter
-- **Utility (2)**: Mixer, Mult
+- **Utility (3)**: Mixer, Mult, Scope
 - **Output (1)**: Output
 
 ## Module Definition

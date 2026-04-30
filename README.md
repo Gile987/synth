@@ -47,6 +47,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **Attenuverter** | Modulation | Signal attenuator and inverter for modulation depth control |
 | **Mixer** | Utility | 4-channel audio mixer with individual levels and master output |
 | **Mult** | Utility | Signal splitter - duplicates one input to four outputs |
+| **Scope** | Utility | Real-time oscilloscope for visualizing audio signals |
 | **Output** | Output | Master gain with mute to speakers |
 
 ## Project Structure
