@@ -93,10 +93,10 @@ export class FilterModule extends BaseModule {
     const ctx = this.context;
     this.biquadFilter = ctx.createBiquadFilter();
 
-    const frequency = this.getParam('frequency') as number;
-    const q = this.getParam('q') as number;
-    const gain = this.getParam('gain') as number;
-    const filterType = this.getParam('filterType') as FilterType;
+    const frequency = this.getNumberParam('frequency') ?? FILTER_DEFAULT_FREQUENCY;
+    const q = this.getNumberParam('q') ?? FILTER_DEFAULT_Q;
+    const gain = this.getNumberParam('gain') ?? FILTER_DEFAULT_GAIN;
+    const filterType = (this.getStringParam('filterType') as FilterType) ?? FILTER_DEFAULT_TYPE;
 
     this.biquadFilter.frequency.value = frequency;
     this.biquadFilter.Q.value = q;

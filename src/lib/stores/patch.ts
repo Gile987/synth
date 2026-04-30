@@ -10,12 +10,14 @@ function createModuleStore() {
   return {
     subscribe,
     add: (module: ModuleInstance) => update(modules => {
-      modules.set(module.id, module);
-      return modules;
+      const updated = new Map(modules);
+      updated.set(module.id, module);
+      return updated;
     }),
     remove: (id: string) => update(modules => {
-      modules.delete(id);
-      return modules;
+      const updated = new Map(modules);
+      updated.delete(id);
+      return updated;
     }),
     updatePosition: (id: string, position: Position) => update(modules => {
       const module = modules.get(id);
@@ -44,12 +46,14 @@ function createConnectionStore() {
   return {
     subscribe,
     add: (connection: Connection) => update(connections => {
-      connections.set(connection.id, connection);
-      return connections;
+      const updated = new Map(connections);
+      updated.set(connection.id, connection);
+      return updated;
     }),
     remove: (id: string) => update(connections => {
-      connections.delete(id);
-      return connections;
+      const updated = new Map(connections);
+      updated.delete(id);
+      return updated;
     }),
     clear: () => set(new Map()),
   };

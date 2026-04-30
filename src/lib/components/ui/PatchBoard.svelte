@@ -77,8 +77,8 @@
     const moduleEl = boardElement?.querySelector(`[data-module-id="${moduleId}"]`);
     if (!moduleEl) return null;
     
-    const portEl = moduleEl.querySelector(`[data-port-name="${portName}"]`) as HTMLElement;
-    if (!portEl) return null;
+    const portEl = moduleEl.querySelector(`[data-port-name="${portName}"]`);
+    if (!portEl || !(portEl instanceof HTMLElement)) return null;
     
     const boardRect = boardElement.getBoundingClientRect();
     const portRect = portEl.getBoundingClientRect();
@@ -132,7 +132,8 @@
   }
 
   function handleModuleDragStart(moduleId: string, e: MouseEvent) {
-    const moduleEl = boardElement.querySelector(`[data-module-id="${moduleId}"]`) as HTMLElement;
+    const moduleEl = boardElement.querySelector(`[data-module-id="${moduleId}"]`);
+    if (!moduleEl || !(moduleEl instanceof HTMLElement)) return;
     const rect = moduleEl.getBoundingClientRect();
     $dragState = {
       moduleId,

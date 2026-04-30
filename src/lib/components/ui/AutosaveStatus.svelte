@@ -35,8 +35,9 @@
   });
 
   function handleToggle(e: Event) {
-    const target = e.target as HTMLInputElement;
-    onToggle(target.checked);
+    if (e.target instanceof HTMLInputElement) {
+      onToggle(e.target.checked);
+    }
   }
 
   function handleClear() {

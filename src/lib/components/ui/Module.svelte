@@ -153,7 +153,7 @@
             <input
               id={paramId}
               type="checkbox"
-              checked={currentValue as boolean}
+              checked={typeof currentValue === 'boolean' ? currentValue : false}
               onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
             />
           {:else if param.controlType === 'number'}

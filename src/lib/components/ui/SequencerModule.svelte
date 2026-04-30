@@ -1,7 +1,36 @@
 <script lang="ts">
   import { synthService, selectedModuleId, selectedConnectionId } from '$stores';
-  import type { ModuleInstance, ModuleDefinition, PortDefinition } from '$types';
+  import type { ModuleInstance, ModuleDefinition, PortDefinition, ParamValue } from '$types';
   import HelpIcon from './HelpIcon.svelte';
+
+  // Type guard for number params
+  function getNumberParam(params: Map<string, ParamValue>, name: string, defaultValue: number): number {
+    const value = params.get(name);
+    return typeof value === 'number' ? value : defaultValue;
+  }
+
+  // Type guard for boolean params
+  function getBooleanParam(params: Map<string, ParamValue>, name: string, defaultValue: boolean): boolean {
+    const value = params.get(name);
+    return typeof value === 'boolean' ? value : defaultValue;
+  }
+
+  // Interface for sequencer module instance methods
+  interface SequencerModuleInstance {
+    getStepPattern(): readonly boolean[];
+    setStep(index: number, value: boolean): void;
+    getCurrentStep(): number;
+  }
+
+  // Type guard for sequencer module instance
+  function isSequencerInstance(instance: unknown): instance is SequencerModuleInstance {
+    return instance !== null && 
+           instance !== undefined &&
+           typeof instance === 'object' &&
+           'getStepPattern' in instance &&
+           'setStep' in instance &&
+           'getCurrentStep' in instance;
+  }
 
   interface Props {
     module: ModuleInstance;
@@ -16,7 +45,7 @@
 
   let isSelected = $derived($selectedModuleId === module.id);
   let position = $derived(module.position);
-  let steps = $derived(module.params.get('steps') as number ?? 16);
+  let steps = $derived(getNumberParam(module.params, 'steps', 16));
   
   // Step pattern - sync with module instance on mount/update
   let stepPattern = $state<boolean[]>(new Array(16).fill(false));
@@ -24,8 +53,8 @@
   // Initialize pattern from module instance or use default
   $effect(() => {
     const moduleInstance = synthService.getModuleInstance?.(module.id);
-    if (moduleInstance && 'getStepPattern' in moduleInstance) {
-      const pattern = (moduleInstance as { getStepPattern: () => readonly boolean[] }).getStepPattern();
+    if (isSequencerInstance(moduleInstance)) {
+      const pattern = moduleInstance.getStepPattern();
       if (pattern.length > 0 && stepPattern.every((v, i) => v === pattern[i])) {
         // Pattern already matches, no need to update
       } else {
@@ -58,8 +87,8 @@
     
     // Update the module instance directly
     const moduleInstance = synthService.getModuleInstance?.(module.id);
-    if (moduleInstance && 'setStep' in moduleInstance) {
-      (moduleInstance as { setStep: (index: number, value: boolean) => void }).setStep(index, stepPattern[index]);
+    if (isSequencerInstance(moduleInstance)) {
+      moduleInstance.setStep(index, stepPattern[index]);
     }
   }
 
@@ -67,8 +96,8 @@
   const outputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'output'));
 
   // Reactive params that update when module changes
-  let rateValue = $derived(module.params.get('rate') as number ?? 4);
-  let playingValue = $derived(module.params.get('playing') as boolean ?? true);
+  let rateValue = $derived(getNumberParam(module.params, 'rate', 4));
+  let playingValue = $derived(getBooleanParam(module.params, 'playing', true));
   
   // Local state for the slider that updates immediately
   let localRateValue = $state(4);
@@ -85,8 +114,8 @@
   $effect(() => {
     const interval = setInterval(() => {
       const moduleInstance = synthService.getModuleInstance?.(module.id);
-      if (moduleInstance && 'getCurrentStep' in moduleInstance) {
-        currentStep = (moduleInstance as { getCurrentStep: () => number }).getCurrentStep();
+      if (isSequencerInstance(moduleInstance)) {
+        currentStep = moduleInstance.getCurrentStep();
       }
     }, 16); // ~60fps
     

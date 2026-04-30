@@ -1,5 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition, ParamValue } from '$types';
+import { GATE_MONITOR_BUFFER_SIZE } from '$core/constants';
 
 export const ADSR_DEFAULT_ATTACK = 0.1;
 export const ADSR_DEFAULT_DECAY = 0.3;
@@ -89,6 +90,7 @@ export class ADSRModule extends BaseModule {
   private depthNode: GainNode | undefined;
   private gateInputNode: GainNode | undefined;
   private gateMonitor: ScriptProcessorNode | undefined;
+  private silentGain: GainNode | undefined;
   private isGateHigh = false;
   private lastGateValue = 0;
   private autoTriggerInterval: number | undefined;
@@ -107,7 +109,7 @@ export class ADSRModule extends BaseModule {
 
     this.gainNode.gain.value = 0;
 
-    const depth = (this.getParam('depth') as number) ?? 1000;
+    const depth = this.getNumberParam('depth') ?? 1000;
     this.depthNode.gain.value = depth;
 
     this.constantSource.connect(this.gainNode);
@@ -118,13 +120,13 @@ export class ADSRModule extends BaseModule {
     this.gateInputNode.gain.value = 1;
 
     // Use ScriptProcessorNode to monitor gate signal level
-    this.gateMonitor = ctx.createScriptProcessor(256, 1, 1);
+    this.gateMonitor = ctx.createScriptProcessor(GATE_MONITOR_BUFFER_SIZE, 1, 1);
     this.gateInputNode.connect(this.gateMonitor);
     
     // Connect monitor to a silent gain node (not destination!) to keep it processing
-    const silentGain = ctx.createGain();
-    silentGain.gain.value = 0;
-    this.gateMonitor.connect(silentGain);
+    this.silentGain = ctx.createGain();
+    this.silentGain.gain.value = 0;
+    this.gateMonitor.connect(this.silentGain);
 
     this.registerPort({
       name: 'gate',
@@ -153,9 +155,9 @@ export class ADSRModule extends BaseModule {
     const loop = () => {
       if (!this.gainNode) return;
 
-      const attack = this.getParam('attack') as number;
-      const decay = this.getParam('decay') as number;
-      const release = this.getParam('release') as number;
+      const attack = this.getNumberParam('attack') ?? ADSR_DEFAULT_ATTACK;
+      const decay = this.getNumberParam('decay') ?? ADSR_DEFAULT_DECAY;
+      const release = this.getNumberParam('release') ?? ADSR_DEFAULT_RELEASE;
 
       const cycleTime = (attack + decay + 0.5 + release) * 1000;
 
@@ -228,15 +230,19 @@ export class ADSRModule extends BaseModule {
       this.gateMonitor.disconnect();
       this.gateMonitor = undefined;
     }
+    if (this.silentGain !== undefined) {
+      this.silentGain.disconnect();
+      this.silentGain = undefined;
+    }
   }
 
   public trigger(): void {
     if (this.gainNode === undefined) return;
 
     const now = this.context.currentTime;
-    const attack = Math.max(0.002, this.getParam('attack') as number); // Minimum 2ms attack
-    const decay = this.getParam('decay') as number;
-    const sustain = this.getParam('sustain') as number;
+    const attack = Math.max(0.002, this.getNumberParam('attack') ?? ADSR_DEFAULT_ATTACK); // Minimum 2ms attack
+    const decay = this.getNumberParam('decay') ?? ADSR_DEFAULT_DECAY;
+    const sustain = this.getNumberParam('sustain') ?? ADSR_DEFAULT_SUSTAIN;
 
     this.gainNode.gain.cancelScheduledValues(now);
 
@@ -257,7 +263,7 @@ export class ADSRModule extends BaseModule {
     if (this.gainNode === undefined) return;
 
     const now = this.context.currentTime;
-    const releaseTime = Math.max(0.005, this.getParam('release') as number); // Minimum 5ms release
+    const releaseTime = Math.max(0.005, this.getNumberParam('release') ?? ADSR_DEFAULT_RELEASE); // Minimum 5ms release
 
     this.gainNode.gain.cancelScheduledValues(now);
 

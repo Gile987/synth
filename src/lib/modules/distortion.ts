@@ -1,5 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition, ParamValue } from '$types';
+import { calculateWetDryGain } from '$core/constants';
 
 export const DISTORTION_DEFAULT_AMOUNT = 0.3;
 export const DISTORTION_DEFAULT_MIX = 0.5;
@@ -58,7 +59,7 @@ export const DISTORTION_DEFINITION: ModuleDefinition = {
  * The amount parameter controls the intensity (0-1).
  */
 function makeDistortionCurve(amount: number): Float32Array {
-  const samples = 44100;
+  const samples = 44100; // Standard audio sample rate for curve resolution
   const curve = new Float32Array(samples);
 
   // Scale amount exponentially for better control
@@ -187,12 +188,12 @@ export class DistortionModule extends BaseModule {
         break;
       case 'mix':
         if (typeof value === 'number') {
-          const mixValue = Math.min(1, Math.max(0, value));
+          const { wet, dry } = calculateWetDryGain(value);
           if (this.wetGain !== undefined) {
-            this.wetGain.gain.value = mixValue;
+            this.wetGain.gain.value = wet;
           }
           if (this.dryGain !== undefined) {
-            this.dryGain.gain.value = 1 - mixValue;
+            this.dryGain.gain.value = dry;
           }
         }
         break;

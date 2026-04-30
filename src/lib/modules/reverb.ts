@@ -1,5 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition, ParamValue } from '$types';
+import { clamp } from '$core/constants';
 
 export const REVERB_DEFAULT_ROOM_SIZE = 0.5;
 export const REVERB_DEFAULT_WET = 0.3;
@@ -130,26 +131,16 @@ export class ReverbModule extends BaseModule {
   }
 
   protected destroyNodes(): void {
-    if (this.inputGain !== undefined) {
-      this.inputGain.disconnect();
-      this.inputGain = undefined;
-    }
-    if (this.convolver !== undefined) {
-      this.convolver.disconnect();
-      this.convolver = undefined;
-    }
-    if (this.wetGain !== undefined) {
-      this.wetGain.disconnect();
-      this.wetGain = undefined;
-    }
-    if (this.dryGain !== undefined) {
-      this.dryGain.disconnect();
-      this.dryGain = undefined;
-    }
-    if (this.outputGain !== undefined) {
-      this.outputGain.disconnect();
-      this.outputGain = undefined;
-    }
+    this.safeDisconnect(this.inputGain);
+    this.safeDisconnect(this.convolver);
+    this.safeDisconnect(this.wetGain);
+    this.safeDisconnect(this.dryGain);
+    this.safeDisconnect(this.outputGain);
+    this.inputGain = undefined;
+    this.convolver = undefined;
+    this.wetGain = undefined;
+    this.dryGain = undefined;
+    this.outputGain = undefined;
   }
 
   override setParam(name: string, value: ParamValue): void {
@@ -158,7 +149,7 @@ export class ReverbModule extends BaseModule {
     switch (name) {
       case 'roomSize':
         if (typeof value === 'number' && this.convolver !== undefined) {
-          const newRoomSize = Math.min(1, Math.max(0, value));
+          const newRoomSize = clamp(value, 0, 1);
           // Only regenerate impulse response if roomSize changed significantly
           if (Math.abs(newRoomSize - this.currentRoomSize) > 0.05) {
             this.currentRoomSize = newRoomSize;
@@ -171,12 +162,12 @@ export class ReverbModule extends BaseModule {
         break;
       case 'wet':
         if (typeof value === 'number' && this.wetGain !== undefined) {
-          this.wetGain.gain.value = Math.min(1, Math.max(0, value));
+          this.wetGain.gain.value = clamp(value, 0, 1);
         }
         break;
       case 'dry':
         if (typeof value === 'number' && this.dryGain !== undefined) {
-          this.dryGain.gain.value = Math.min(1, Math.max(0, value));
+          this.dryGain.gain.value = clamp(value, 0, 1);
         }
         break;
     }

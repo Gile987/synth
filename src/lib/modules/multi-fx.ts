@@ -276,50 +276,32 @@ export class MultiFxModule extends BaseModule {
   }
 
   protected destroyNodes(): void {
-    if (this.ringModCarrier !== undefined) {
-      this.ringModCarrier.stop();
-      this.ringModCarrier.disconnect();
-      this.ringModCarrier = undefined;
-    }
-    if (this.ringModMultiply !== undefined) {
-      this.ringModMultiply.disconnect();
-      this.ringModMultiply = undefined;
-    }
+    this.safeStopOscillator(this.ringModCarrier);
+    this.safeDisconnect(this.ringModMultiply);
     if (this.bitCrushShaper !== undefined) {
-      this.bitCrushShaper.disconnect();
       this.bitCrushShaper.curve = null;
-      this.bitCrushShaper = undefined;
     }
+    this.safeDisconnect(this.bitCrushShaper);
     if (this.waveFoldShaper !== undefined) {
-      this.waveFoldShaper.disconnect();
       this.waveFoldShaper.curve = null;
-      this.waveFoldShaper = undefined;
     }
-    if (this.tremoloLFO !== undefined) {
-      this.tremoloLFO.stop();
-      this.tremoloLFO.disconnect();
-      this.tremoloLFO = undefined;
-    }
-    if (this.tremoloGain !== undefined) {
-      this.tremoloGain.disconnect();
-      this.tremoloGain = undefined;
-    }
-    if (this.inputGain !== undefined) {
-      this.inputGain.disconnect();
-      this.inputGain = undefined;
-    }
-    if (this.outputGain !== undefined) {
-      this.outputGain.disconnect();
-      this.outputGain = undefined;
-    }
-    if (this.dryGain !== undefined) {
-      this.dryGain.disconnect();
-      this.dryGain = undefined;
-    }
-    if (this.wetGain !== undefined) {
-      this.wetGain.disconnect();
-      this.wetGain = undefined;
-    }
+    this.safeDisconnect(this.waveFoldShaper);
+    this.safeStopOscillator(this.tremoloLFO);
+    this.safeDisconnect(this.tremoloGain);
+    this.safeDisconnect(this.inputGain);
+    this.safeDisconnect(this.outputGain);
+    this.safeDisconnect(this.dryGain);
+    this.safeDisconnect(this.wetGain);
+    this.ringModCarrier = undefined;
+    this.ringModMultiply = undefined;
+    this.bitCrushShaper = undefined;
+    this.waveFoldShaper = undefined;
+    this.tremoloLFO = undefined;
+    this.tremoloGain = undefined;
+    this.inputGain = undefined;
+    this.outputGain = undefined;
+    this.dryGain = undefined;
+    this.wetGain = undefined;
   }
 
   override setParam(name: string, value: ParamValue): void {

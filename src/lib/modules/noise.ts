@@ -117,11 +117,11 @@ export class NoiseModule extends BaseModule {
     // Create gain node for level control
     this.gainNode = ctx.createGain();
     
-    const level = this.getParam('level') as number;
+    const level = this.getNumberParam('level') ?? NOISE_DEFAULT_LEVEL;
     this.gainNode.gain.value = level;
 
     // Create noise buffer and source
-    const noiseType = this.getParam('type') as NoiseType;
+    const noiseType = (this.getStringParam('type') as NoiseType) ?? NOISE_DEFAULT_TYPE;
     const buffer = createNoiseBuffer(ctx, noiseType);
     
     this.bufferSource = ctx.createBufferSource();

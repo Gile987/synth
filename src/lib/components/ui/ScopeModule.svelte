@@ -4,6 +4,32 @@
   import HelpIcon from './HelpIcon.svelte';
   import { onMount, onDestroy } from 'svelte';
 
+  // Type guard for number params
+  function getNumberParam(params: Map<string, ParamValue>, name: string, defaultValue: number): number {
+    const value = params.get(name);
+    return typeof value === 'number' ? value : defaultValue;
+  }
+
+  // Type guard for boolean params
+  function getBooleanParam(params: Map<string, ParamValue>, name: string, defaultValue: boolean): boolean {
+    const value = params.get(name);
+    return typeof value === 'boolean' ? value : defaultValue;
+  }
+
+  // Interface for scope module instance
+  interface ScopeModuleInstance {
+    onDataUpdate(callback: (data: Float32Array) => void): void;
+  }
+
+  // Type guard for scope module instance
+  function isScopeInstance(instance: unknown): instance is ScopeModuleInstance {
+    return instance !== null && 
+           instance !== undefined &&
+           typeof instance === 'object' &&
+           'onDataUpdate' in instance &&
+           typeof (instance as ScopeModuleInstance).onDataUpdate === 'function';
+  }
+
   interface Props {
     module: ModuleInstance;
     definition: ModuleDefinition;
@@ -45,9 +71,9 @@
     ctx = canvas.getContext('2d');
     
     const moduleInstance = synthService.getModuleInstance?.(module.id);
-    if (moduleInstance && 'onDataUpdate' in moduleInstance) {
-      (moduleInstance as { onDataUpdate: (cb: (data: Float32Array) => void) => void }).onDataUpdate((data) => {
-        const freeze = module.params.get('freeze') as boolean ?? false;
+    if (isScopeInstance(moduleInstance)) {
+      moduleInstance.onDataUpdate((data) => {
+        const freeze = getBooleanParam(module.params, 'freeze', false);
         if (!freeze) waveformData = data;
       });
     }
@@ -74,9 +100,9 @@
     ctx.lineTo(width, height / 2);
     ctx.stroke();
     
-    const timeScale = module.params.get('timeScale') as number ?? 1;
-    const gain = module.params.get('gain') as number ?? 1;
-    const freeze = module.params.get('freeze') as boolean ?? false;
+    const timeScale = getNumberParam(module.params, 'timeScale', 1);
+    const gain = getNumberParam(module.params, 'gain', 1);
+    const freeze = getBooleanParam(module.params, 'freeze', false);
     
     if (waveformData.length > 0) {
       ctx.strokeStyle = '#a8d4a8';
@@ -207,7 +233,7 @@
             <input
               id={paramId}
               type="checkbox"
-              checked={currentValue as boolean}
+              checked={typeof currentValue === 'boolean' ? currentValue : false}
               onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
             />
           {/if}
@@ -415,8 +441,7 @@
     font-family: 'Inter', sans-serif;
   }
 
-  .param input,
-  .param select {
+  .param input {
     width: 100%;
     padding: 4px 8px;
     border: 1px solid #5a5040;
