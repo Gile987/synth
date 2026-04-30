@@ -93,8 +93,7 @@ function createNoiseBuffer(ctx: AudioContext, type: NoiseType, duration: number 
     for (let i = 0; i < length; i++) {
       const white = Math.random() * 2 - 1;
       lastOut = (lastOut + (0.02 * white)) / 1.02;
-      lastOut *= 3.5; // Boost gain
-      data[i] = lastOut;
+      data[i] = lastOut * 3.5; // Apply gain, don't accumulate
     }
   }
 
