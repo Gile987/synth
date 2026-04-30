@@ -82,9 +82,9 @@ export class LFOModule extends BaseModule {
     this.gainNode = ctx.createGain();
 
     // Set initial values
-    const rate = this.getParam('rate') as number;
-    const depth = this.getParam('amplitude') as number;
-    const waveform = this.getParam('waveform') as LFOWaveform;
+    const rate = this.getNumberParam('rate') ?? LFO_DEFAULT_RATE;
+    const depth = this.getNumberParam('amplitude') ?? LFO_DEFAULT_AMPLITUDE;
+    const waveform = (this.getStringParam('waveform') as LFOWaveform) ?? LFO_DEFAULT_WAVEFORM;
 
     this.oscillatorNode.frequency.value = rate;
     this.oscillatorNode.type = waveform;

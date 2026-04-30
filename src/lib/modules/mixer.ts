@@ -172,30 +172,18 @@ export class MixerModule extends BaseModule {
   }
 
   protected destroyNodes(): void {
-    if (this.input1Gain !== undefined) {
-      this.input1Gain.disconnect();
-      this.input1Gain = undefined;
-    }
-    if (this.input2Gain !== undefined) {
-      this.input2Gain.disconnect();
-      this.input2Gain = undefined;
-    }
-    if (this.input3Gain !== undefined) {
-      this.input3Gain.disconnect();
-      this.input3Gain = undefined;
-    }
-    if (this.input4Gain !== undefined) {
-      this.input4Gain.disconnect();
-      this.input4Gain = undefined;
-    }
-    if (this.masterGain !== undefined) {
-      this.masterGain.disconnect();
-      this.masterGain = undefined;
-    }
-    if (this.outputGain !== undefined) {
-      this.outputGain.disconnect();
-      this.outputGain = undefined;
-    }
+    this.safeDisconnect(this.input1Gain);
+    this.safeDisconnect(this.input2Gain);
+    this.safeDisconnect(this.input3Gain);
+    this.safeDisconnect(this.input4Gain);
+    this.safeDisconnect(this.masterGain);
+    this.safeDisconnect(this.outputGain);
+    this.input1Gain = undefined;
+    this.input2Gain = undefined;
+    this.input3Gain = undefined;
+    this.input4Gain = undefined;
+    this.masterGain = undefined;
+    this.outputGain = undefined;
   }
 
   override setParam(name: string, value: ParamValue): void {

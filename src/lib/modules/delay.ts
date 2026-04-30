@@ -1,5 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition, ParamValue } from '$types';
+import { calculateWetDryGain } from '$core/constants';
 
 export const DELAY_DEFAULT_TIME = 0.3;
 export const DELAY_DEFAULT_FEEDBACK = 0.3;
@@ -86,14 +87,15 @@ export class DelayModule extends BaseModule {
     this.outputGain = ctx.createGain();
 
     // Set initial values
-    const time = this.getParam('time') as number;
-    const feedback = this.getParam('feedback') as number;
-    const mix = this.getParam('mix') as number;
+    const time = this.getNumberParam('time') ?? DELAY_DEFAULT_TIME;
+    const feedback = this.getNumberParam('feedback') ?? DELAY_DEFAULT_FEEDBACK;
+    const mix = this.getNumberParam('mix') ?? DELAY_DEFAULT_MIX;
 
     this.delayNode.delayTime.value = time;
     this.feedbackGain.gain.value = feedback;
-    this.wetGain.gain.value = mix;
-    this.dryGain.gain.value = 1 - mix;
+    const { wet, dry } = calculateWetDryGain(mix);
+    this.wetGain.gain.value = wet;
+    this.dryGain.gain.value = dry;
 
     // Connect signal path:
     // Input → [Split]
@@ -131,30 +133,18 @@ export class DelayModule extends BaseModule {
   }
 
   protected destroyNodes(): void {
-    if (this.inputGain !== undefined) {
-      this.inputGain.disconnect();
-      this.inputGain = undefined;
-    }
-    if (this.delayNode !== undefined) {
-      this.delayNode.disconnect();
-      this.delayNode = undefined;
-    }
-    if (this.feedbackGain !== undefined) {
-      this.feedbackGain.disconnect();
-      this.feedbackGain = undefined;
-    }
-    if (this.wetGain !== undefined) {
-      this.wetGain.disconnect();
-      this.wetGain = undefined;
-    }
-    if (this.dryGain !== undefined) {
-      this.dryGain.disconnect();
-      this.dryGain = undefined;
-    }
-    if (this.outputGain !== undefined) {
-      this.outputGain.disconnect();
-      this.outputGain = undefined;
-    }
+    this.safeDisconnect(this.inputGain);
+    this.safeDisconnect(this.delayNode);
+    this.safeDisconnect(this.feedbackGain);
+    this.safeDisconnect(this.wetGain);
+    this.safeDisconnect(this.dryGain);
+    this.safeDisconnect(this.outputGain);
+    this.inputGain = undefined;
+    this.delayNode = undefined;
+    this.feedbackGain = undefined;
+    this.wetGain = undefined;
+    this.dryGain = undefined;
+    this.outputGain = undefined;
   }
 
   override setParam(name: string, value: ParamValue): void {
@@ -180,12 +170,12 @@ export class DelayModule extends BaseModule {
         break;
       case 'mix':
         if (typeof value === 'number') {
-          const mixValue = Math.min(1, Math.max(0, value));
+          const { wet, dry } = calculateWetDryGain(value);
           if (this.wetGain !== undefined) {
-            this.wetGain.gain.value = mixValue;
+            this.wetGain.gain.value = wet;
           }
           if (this.dryGain !== undefined) {
-            this.dryGain.gain.value = 1 - mixValue;
+            this.dryGain.gain.value = dry;
           }
         }
         break;

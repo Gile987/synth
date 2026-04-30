@@ -1,5 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition } from '$types';
+import { ANALYSER_FFT_SIZE, SCOPE_BUFFER_SIZE, SCRIPT_PROCESSOR_BUFFER_SIZE } from '$core/constants';
 
 export const SCOPE_HELP = {
   title: 'Oscilloscope',
@@ -27,7 +28,8 @@ export class ScopeModule extends BaseModule {
   private inputGain: GainNode | undefined;
   private analyser: AnalyserNode | undefined;
   private scriptProcessor: ScriptProcessorNode | undefined;
-  private waveformData: Float32Array = new Float32Array(1024);
+  private silentGain: GainNode | undefined;
+  private waveformData: Float32Array = new Float32Array(SCOPE_BUFFER_SIZE);
   private dataUpdateCallback: ((data: Float32Array) => void) | null = null;
 
   constructor(id: string) {
@@ -37,16 +39,19 @@ export class ScopeModule extends BaseModule {
   protected createNodes(): void {
     const ctx = this.context;
     this.inputGain = ctx.createGain();
-    this.inputGain.gain.value = this.getParam('gain') as number;
+    this.inputGain.gain.value = this.getNumberParam('gain') ?? 1;
     this.analyser = ctx.createAnalyser();
-    this.analyser.fftSize = 2048;
-    this.scriptProcessor = ctx.createScriptProcessor(1024, 1, 1);
+    this.analyser.fftSize = ANALYSER_FFT_SIZE;
+    this.scriptProcessor = ctx.createScriptProcessor(SCRIPT_PROCESSOR_BUFFER_SIZE, 1, 1);
     this.inputGain.connect(this.analyser);
     this.analyser.connect(this.scriptProcessor);
-    this.scriptProcessor.connect(ctx.destination);
+    // Connect to silent gain (not destination) to avoid audio output leak
+    this.silentGain = ctx.createGain();
+    this.silentGain.gain.value = 0;
+    this.scriptProcessor.connect(this.silentGain);
     
     this.scriptProcessor.onaudioprocess = (event) => {
-      if (this.getParam('freeze') as boolean) return;
+      if (this.getBooleanParam('freeze') ?? false) return;
       const inputData = event.inputBuffer.getChannelData(0);
       this.waveformData.set(inputData);
       if (this.dataUpdateCallback) this.dataUpdateCallback(this.waveformData);
@@ -59,9 +64,12 @@ export class ScopeModule extends BaseModule {
     this.scriptProcessor?.disconnect();
     this.analyser?.disconnect();
     this.inputGain?.disconnect();
+    this.silentGain?.disconnect();
     this.scriptProcessor = undefined;
     this.analyser = undefined;
     this.inputGain = undefined;
+    this.silentGain = undefined;
+    this.dataUpdateCallback = null;
   }
 
   onDataUpdate(callback: (data: Float32Array) => void): void {

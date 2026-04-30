@@ -141,17 +141,12 @@ export class PatchEngine {
     }
 
     // Create audio connection
-    console.log(`[PatchEngine] Connecting ${sourceModuleId}:${sourcePortName} -> ${targetModuleId}:${targetPortName}`);
-    console.log(`[PatchEngine] Source node type: ${sourcePort.node.constructor.name}, Target node type: ${targetPort.node.constructor.name}`);
-    
     if (sourcePort.node instanceof AudioNode && targetPort.node instanceof AudioNode) {
       sourcePort.node.connect(targetPort.node);
-      console.log(`[PatchEngine] Connected AudioNode -> AudioNode`);
     } else if (sourcePort.node instanceof AudioNode && targetPort.node instanceof AudioParam) {
       sourcePort.node.connect(targetPort.node);
-      console.log(`[PatchEngine] Connected AudioNode -> AudioParam`);
     } else {
-      console.log(`[PatchEngine] WARNING: Could not connect - incompatible types`);
+      console.warn(`[PatchEngine] Could not connect ${sourceModuleId}:${sourcePortName} -> ${targetModuleId}:${targetPortName} - incompatible types`);
     }
 
     const connection: Connection = {
@@ -190,9 +185,8 @@ export class PatchEngine {
           } else if (targetPort.node instanceof AudioParam) {
             try {
               sourcePort.node.disconnect(targetPort.node);
-            } catch (e) {
+            } catch {
               // Node might already be disconnected, ignore error
-              console.warn(`[PatchEngine] Disconnect warning: ${e}`);
             }
             // Reset the AudioParam to its stored parameter value
             // since Web Audio doesn't automatically revert it

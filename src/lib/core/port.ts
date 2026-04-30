@@ -14,10 +14,3 @@ export function createPort(
     node,
   };
 }
-
-/**
- * Type guard for AudioParam
- */
-export function isAudioParam(node: AudioNode | AudioParam): node is AudioParam {
-  return 'value' in node && typeof node.value === 'number';
-}

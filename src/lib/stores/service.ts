@@ -91,7 +91,9 @@ class SynthService {
   }
 
   public removeModule(id: string): void {
-    if (!this.audioInitialized) return;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
 
     this.engine.removeModule(id);
     modules.remove(id);
@@ -103,7 +105,9 @@ class SynthService {
     targetModuleId: string,
     targetPortName: string
   ): void {
-    if (!this.audioInitialized) return;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
 
     const connection = this.engine.connect(
       sourceModuleId,
@@ -116,27 +120,35 @@ class SynthService {
   }
 
   public disconnect(connectionId: string): void {
-    if (!this.audioInitialized) return;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
 
     this.engine.disconnect(connectionId);
     connections.remove(connectionId);
   }
 
   public updateModulePosition(id: string, position: Position): void {
-    if (!this.audioInitialized) return;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
 
     this.engine.updateModulePosition(id, position);
     modules.updatePosition(id, position);
   }
 
   public setModuleParam(moduleId: string, paramName: string, value: ParamValue): void {
-    if (!this.audioInitialized) return;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
 
     this.engine.setModuleParam(moduleId, paramName, value);
   }
 
   public getModuleInstance(moduleId: string) {
-    if (!this.audioInitialized) return undefined;
+    if (!this.audioInitialized) {
+      throw new Error('Audio engine not initialized');
+    }
     return this.engine.getModuleInstance(moduleId);
   }
 

@@ -74,13 +74,13 @@ export class OscillatorModule extends BaseModule {
     this.oscillatorNode = ctx.createOscillator();
 
     // Set initial values
-    const frequency = this.getParam('frequency') as number;
-    const detune = this.getParam('detune') as number;
-    const waveform = this.getParam('waveform') as OscillatorWaveform;
+    const frequency = this.getNumberParam('frequency') ?? OSCILLATOR_DEFAULT_FREQUENCY;
+    const detune = this.getNumberParam('detune') ?? OSCILLATOR_DEFAULT_DETUNE;
+    const waveform = this.getStringParam('waveform') ?? OSCILLATOR_DEFAULT_WAVEFORM;
 
     this.oscillatorNode.frequency.value = frequency;
     this.oscillatorNode.detune.value = detune;
-    this.oscillatorNode.type = waveform;
+    this.oscillatorNode.type = waveform as OscillatorWaveform;
 
     // Register ports
     this.registerPort({

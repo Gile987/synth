@@ -106,6 +106,30 @@ export abstract class BaseModule implements SynthModule {
   }
 
   /**
+   * Get a parameter value as number
+   */
+  public getNumberParam(name: string): number | undefined {
+    const value = this._params.get(name);
+    return typeof value === 'number' ? value : undefined;
+  }
+
+  /**
+   * Get a parameter value as boolean
+   */
+  public getBooleanParam(name: string): boolean | undefined {
+    const value = this._params.get(name);
+    return typeof value === 'boolean' ? value : undefined;
+  }
+
+  /**
+   * Get a parameter value as string
+   */
+  public getStringParam(name: string): string | undefined {
+    const value = this._params.get(name);
+    return typeof value === 'string' ? value : undefined;
+  }
+
+  /**
    * Get all parameter values
    */
   public getAllParams(): ReadonlyMap<string, ParamValue> {
@@ -139,4 +163,46 @@ export abstract class BaseModule implements SynthModule {
    * Destroy audio nodes - must be implemented by subclasses
    */
   protected abstract destroyNodes(): void;
+
+  /**
+   * Safely disconnect and cleanup an audio node
+   * Helper method to reduce duplication in destroyNodes() implementations
+   */
+  protected safeDisconnect(node: AudioNode | undefined): void {
+    if (node !== undefined) {
+      try {
+        node.disconnect();
+      } catch {
+        // Node might already be disconnected, ignore
+      }
+    }
+  }
+
+  /**
+   * Safely stop, disconnect and cleanup an audio buffer source node
+   */
+  protected safeStopAndDisconnect(node: AudioBufferSourceNode | undefined): void {
+    if (node !== undefined) {
+      try {
+        node.stop();
+      } catch {
+        // Node might not be playing, ignore
+      }
+      this.safeDisconnect(node);
+    }
+  }
+
+  /**
+   * Safely stop, disconnect and cleanup an oscillator node
+   */
+  protected safeStopOscillator(node: OscillatorNode | undefined): void {
+    if (node !== undefined) {
+      try {
+        node.stop();
+      } catch {
+        // Node might not be playing, ignore
+      }
+      this.safeDisconnect(node);
+    }
+  }
 }

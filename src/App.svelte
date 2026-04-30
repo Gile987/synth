@@ -18,6 +18,7 @@
   let lastSavedTime = $state<Date | null>(null);
   let showRestoreNotification = $state(false);
   let userClearedSession = false;
+  let autosaveCleanup: (() => void) | null = null;
 
   onMount(() => {
     try {
@@ -31,6 +32,9 @@
     }
 
     return () => {
+      if (autosaveCleanup) {
+        autosaveCleanup();
+      }
       synthService.dispose();
     };
   });
@@ -59,7 +63,7 @@
       }
       
       // Start auto-save subscription
-      setupAutosave();
+      autosaveCleanup = setupAutosave();
     } catch (err) {
       error = err instanceof Error ? err.message : 'Failed to start audio';
       console.error('[app] Audio initialization failed:', err);
@@ -120,6 +124,10 @@
 
   function handleClearSession() {
     userClearedSession = true;
+    if (autosaveCleanup) {
+      autosaveCleanup();
+      autosaveCleanup = null;
+    }
     presetManager.clearSession();
     audioStarted = false; // Reset to start screen
     autosaveStatus = 'idle';
