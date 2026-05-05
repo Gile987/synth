@@ -53,28 +53,30 @@ src/
     │   ├── port.ts          # Port creation helpers
     │   └── constants.ts     # Audio constants
     │
-    ├── modules/         # Concrete module implementations (16 total)
+    ├── modules/         # Concrete module implementations (17 total)
     │   ├── oscillator.ts    # OscillatorModule - sound source with multiple waveforms
     │   ├── noise.ts        # NoiseModule - white, pink, brown noise generator
     │   ├── filter.ts       # FilterModule - frequency shaping with modulation
     │   ├── vca.ts          # VCAModule - amplitude control
     │   ├── reverb.ts       # ReverbModule - convolution reverb
     │   ├── delay.ts        # DelayModule - echo effect
+    │   ├── chorus-flanger.ts # ChorusFlangerModule - modulated delay for chorus and flanger tones
     │   ├── distortion.ts   # DistortionModule - wave shaping distortion
     │   ├── multi-fx.ts     # MultiFxModule - ring mod, bit crush, wave folder, tremolo
     │   ├── lfo.ts          # LFOModule - low frequency modulation
     │   ├── adsr.ts         # ADSRModule - envelope generator with gate detection
     │   ├── sequencer.ts    # SequencerModule - step sequencer with scheduler
     │   ├── attenuverter.ts # AttenuverterModule - signal attenuator/inverter
-│   ├── mixer.ts        # MixerModule - 4-channel audio mixer
-│   ├── mult.ts         # MultModule - signal splitter (1 input → 4 outputs)
-│   ├── scope.ts        # ScopeModule - real-time oscilloscope
-│   └── output.ts       # OutputModule - master output
+    │   ├── mixer.ts        # MixerModule - 4-channel audio mixer
+    │   ├── mult.ts         # MultModule - signal splitter (1 input → 4 outputs)
+    │   ├── scope.ts        # ScopeModule - real-time oscilloscope
+    │   └── output.ts       # OutputModule - master output
     │
     ├── components/ui/   # Svelte UI components
     │   ├── PatchBoard.svelte      # Main canvas with grid snapping and auto-expansion
     │   ├── Module.svelte          # Standard module UI
     │   ├── SequencerModule.svelte # Custom sequencer UI with step grid
+    │   ├── ScopeModule.svelte     # Custom scope UI with canvas waveform display
     │   ├── ModulePalette.svelte   # Add modules sidebar with categories and search
     │   ├── CableLayer.svelte      # SVG cable overlay with repatching support
     │   ├── HelpModal.svelte       # Module help overlay
@@ -228,7 +230,7 @@ All stores in `/src/lib/stores/patch.ts`:
 ## Current Module Set
 
 - **Source (2)**: Oscillator, Noise
-- **Effect (6)**: Filter, VCA, Reverb, Delay, Distortion, Multi-FX
+- **Effect (7)**: Filter, VCA, Reverb, Delay, Chorus/Flanger, Distortion, Multi-FX
 - **Modulation (4)**: LFO, ADSR, Sequencer, Attenuverter
 - **Utility (3)**: Mixer, Mult, Scope
 - **Output (1)**: Output
@@ -353,6 +355,8 @@ this.registry.register(YOUR_MODULE_DEFINITION, (id) => new YourModule(id))
 ```
 
 The module will automatically appear in the ModulePalette sidebar.
+
+If a module needs a bespoke UI beyond the generic controls in `Module.svelte`, add a dedicated Svelte component and route it in `PatchBoard.svelte`, following the existing `SequencerModule.svelte` and `ScopeModule.svelte` pattern.
 
 ## Web Audio API Notes
 

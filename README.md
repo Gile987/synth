@@ -5,7 +5,7 @@ A browser-based modular synthesizer built with Svelte 5 and the Web Audio API.
 ## What Is This?
 
 A virtual modular synthesizer where you can:
-- Add 15 different modules: oscillators, noise, filters, effects, LFOs, ADSR envelopes, sequencers, utilities, and more
+- Add 17 different modules: oscillators, noise, filters, effects, modulation sources, utilities, and more
 - Connect modules with virtual cables
 - Create rhythmic patterns with the step sequencer
 - Shape sounds with ADSR envelopes and filters
@@ -39,6 +39,7 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 | **VCA** | Effect | Voltage Controlled Amplifier for amplitude shaping |
 | **Reverb** | Effect | Convolution reverb with programmable impulse responses |
 | **Delay** | Effect | Echo effect with time, feedback, and mix controls |
+| **Chorus/Flanger** | Effect | Modulated delay effect for wide chorus thickening and jet-like flanger sweeps |
 | **Distortion** | Effect | Wave shaping distortion with adjustable drive and mix |
 | **Multi-FX** | Effect | Ring modulator, bit crusher, wave folder, and tremolo with mix control |
 | **LFO** | Modulation | Low frequency oscillator for modulation effects |
@@ -59,7 +60,7 @@ src/
 └── lib/
     ├── content/         # Educational content (synthesis help guide)
     ├── core/            # Audio engine (registry, patch-engine, base-module)
-    ├── modules/         # Synth modules (15 total: oscillator, noise, filter, vca, reverb, delay, distortion, multi-fx, lfo, adsr, sequencer, attenuverter, mixer, mult, output)
+    ├── modules/         # Synth modules (17 total: oscillator, noise, filter, vca, reverb, delay, chorus-flanger, distortion, multi-fx, lfo, adsr, sequencer, attenuverter, mixer, mult, scope, output)
     ├── components/ui/   # Svelte UI components (Module, PatchBoard, CableLayer, SequencerModule, ModulePalette, SynthHelpModal, PresetBrowser, AutosaveStatus, etc.)
     ├── stores/          # State management
     └── types/           # TypeScript definitions
@@ -71,6 +72,7 @@ src/
 - Per-module contextual help via the header help icon
 - 20px grid snapping while dragging modules
 - Sequencer step playback indicator
+- Scope module with real-time waveform visualization
 - Browser-safe audio initialization gate before the patching UI appears
 - Auto-save with visual feedback ("Auto-saving..." and "Saved" indicators in the toolbar)
 - Preset browser for saving, loading, and managing patches
