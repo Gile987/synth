@@ -201,40 +201,52 @@
 
     <!-- Controls -->
     <div class="sequencer-controls">
-      <div class="control-row">
-        <label for="{module.id}-rate">Rate</label>
-        <input
-          id="{module.id}-rate"
-          type="range"
-          min="0.5"
-          max="20"
-          step="0.5"
-          bind:value={localRateValue}
-          oninput={() => handleParamChange('rate', localRateValue)}
-        />
-        <span class="rate-value">{localRateValue.toFixed(1)} Hz</span>
+      <div class="control-row rate-row">
+        <div class="rate-header">
+          <label for="{module.id}-rate">Rate</label>
+          <span class="rate-value">{localRateValue.toFixed(1)} Hz</span>
+        </div>
+        <div class="slider-shell">
+          <input
+            id="{module.id}-rate"
+            type="range"
+            min="0.5"
+            max="20"
+            step="0.5"
+            bind:value={localRateValue}
+            oninput={() => handleParamChange('rate', localRateValue)}
+          />
+        </div>
       </div>
       
       <div class="control-row">
         <label for="{module.id}-playing">Playing</label>
-        <input
-          id="{module.id}-playing"
-          type="checkbox"
-          checked={playingValue}
-          onchange={(e) => handleParamChange('playing', e.currentTarget.checked)}
-        />
+        <label class="toggle-control" for="{module.id}-playing">
+          <input
+            id="{module.id}-playing"
+            type="checkbox"
+            checked={playingValue}
+            onchange={(e) => handleParamChange('playing', e.currentTarget.checked)}
+          />
+          <span class="toggle-track">
+            <span class="toggle-thumb"></span>
+          </span>
+          <span class="toggle-label">{playingValue ? 'RUN' : 'STOP'}</span>
+        </label>
       </div>
       
       <div class="control-row">
         <label for="{module.id}-steps">Steps</label>
-        <select
-          id="{module.id}-steps"
-          value={steps}
-          onchange={(e) => handleParamChange('steps', parseInt(e.currentTarget.value))}
-        >
-          <option value={8}>8</option>
-          <option value={16}>16</option>
-        </select>
+        <div class="select-shell">
+          <select
+            id="{module.id}-steps"
+            value={steps}
+            onchange={(e) => handleParamChange('steps', parseInt(e.currentTarget.value))}
+          >
+            <option value={8}>8</option>
+            <option value={16}>16</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
@@ -489,38 +501,220 @@
   .control-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 6px 8px;
+    border: 1px solid rgba(86, 97, 110, 0.5);
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(27, 29, 44, 0.96) 0%, rgba(18, 20, 31, 0.98) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 1px 0 rgba(0, 0, 0, 0.2);
+    min-width: 0;
   }
 
   .control-row label {
     font-size: 11px;
-    color: #888;
-    text-transform: capitalize;
-    min-width: 50px;
+    color: #aeb7c7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 54px;
+    font-family: 'Inter', sans-serif;
+    flex-shrink: 0;
+  }
+
+  .rate-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rate-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .rate-row label {
+    min-width: 0;
+  }
+
+  .slider-shell {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .rate-row .slider-shell {
+    width: 100%;
   }
 
   .control-row input[type="range"] {
     flex: 1;
-    height: 20px;
+    height: 18px;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  .control-row input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    border: 1px solid #455061;
+    background: linear-gradient(180deg, #161b27 0%, #2a3145 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
+  }
+
+  .control-row input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -5px;
+    border-radius: 50%;
+    border: 1px solid #50627d;
+    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    cursor: pointer;
+  }
+
+  .control-row input[type="range"]::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    border: 1px solid #455061;
+    background: linear-gradient(180deg, #161b27 0%, #2a3145 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
+  }
+
+  .control-row input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #50627d;
+    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    cursor: pointer;
   }
 
   .control-row input[type="checkbox"] {
-    width: auto;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .toggle-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  .toggle-track {
+    position: relative;
+    width: 34px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid #455061;
+    background: linear-gradient(180deg, #161b27 0%, #101521 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55);
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #50627d;
+    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transition: transform 0.16s ease, background 0.16s ease;
+  }
+
+  .toggle-control input:checked + .toggle-track {
+    border-color: #5a8d66;
+    background: linear-gradient(180deg, #203624 0%, #162718 100%);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.55),
+      0 0 8px rgba(143, 199, 143, 0.15);
+  }
+
+  .toggle-control input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(16px);
+    background: radial-gradient(circle at 35% 30%, #e3f7d7 0%, #9dce8f 38%, #547148 100%);
+    border-color: #5a8d66;
+  }
+
+  .toggle-label {
+    min-width: 34px;
+    color: #d8e4d1;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .select-shell {
+    position: relative;
+    min-width: 0;
+  }
+
+  .select-shell::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #d8c4a0;
+    font-size: 12px;
+    pointer-events: none;
   }
 
   .control-row select {
-    padding: 4px 8px;
-    border: 1px solid #444;
+    min-width: 72px;
+    padding: 7px 28px 7px 10px;
+    border: 1px solid #455061;
     border-radius: 4px;
-    background: #1a1a2e;
-    color: #fff;
+    background: linear-gradient(180deg, #1a2030 0%, #111622 100%);
+    color: #f1f4fb;
     font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   .rate-value {
     font-size: 11px;
-    color: #aaa;
-    min-width: 50px;
+    color: #e4efdb;
+    min-width: 0;
+    width: 64px;
+    flex-shrink: 0;
     text-align: right;
+    padding: 4px 7px;
+    border: 1px solid rgba(112, 136, 98, 0.38);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(33, 48, 27, 0.9) 0%, rgba(24, 34, 20, 0.95) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 1px 0 rgba(0, 0, 0, 0.12);
+    font-family: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+
+  .rate-row .rate-value {
+    width: auto;
+    margin-left: 2px;
   }
 </style>

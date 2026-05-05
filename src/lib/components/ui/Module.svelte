@@ -144,32 +144,42 @@
               <span class="param-value">{currentValue}{getUnit(param.name)}</span>
             </div>
           {:else if param.controlType === 'select'}
-            <select
-              id={paramId}
-              value={currentValue}
-              onchange={(e) => handleParamChange(param.name, e.currentTarget.value)}
-            >
-              {#each param.options ?? [] as opt}
-                <option value={opt}>{opt}</option>
-              {/each}
-            </select>
+            <div class="select-control">
+              <select
+                id={paramId}
+                value={currentValue}
+                onchange={(e) => handleParamChange(param.name, e.currentTarget.value)}
+              >
+                {#each param.options ?? [] as opt}
+                  <option value={opt}>{opt}</option>
+                {/each}
+              </select>
+            </div>
           {:else if param.controlType === 'toggle'}
-            <input
-              id={paramId}
-              type="checkbox"
-              checked={typeof currentValue === 'boolean' ? currentValue : false}
-              onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
-            />
+            <label class="toggle-control" for={paramId}>
+              <input
+                id={paramId}
+                type="checkbox"
+                checked={typeof currentValue === 'boolean' ? currentValue : false}
+                onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
+              />
+              <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+              </span>
+              <span class="toggle-label">{typeof currentValue === 'boolean' && currentValue ? 'ON' : 'OFF'}</span>
+            </label>
           {:else if param.controlType === 'number'}
-            <input
-              id={paramId}
-              type="number"
-              min={param.min}
-              max={param.max}
-              step={param.step}
-              value={currentValue}
-              onchange={(e) => handleParamChange(param.name, parseFloat(e.currentTarget.value))}
-            />
+            <div class="number-control">
+              <input
+                id={paramId}
+                type="number"
+                min={param.min}
+                max={param.max}
+                step={param.step}
+                value={currentValue}
+                onchange={(e) => handleParamChange(param.name, parseFloat(e.currentTarget.value))}
+              />
+            </div>
           {/if}
         </div>
       {/each}
@@ -421,63 +431,217 @@
 
   .param label {
     font-size: 10px;
-    color: #a09080;
+    color: #b7a48f;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.15px;
     font-family: 'Inter', sans-serif;
   }
 
   .param input,
   .param select {
     width: 100%;
-    padding: 4px 8px;
+    padding: 7px 10px;
     border: 1px solid #5a5040;
-    border-radius: 2px;
-    background: linear-gradient(180deg, #2a2520 0%, #1a1815 100%);
-    color: #e8ddd0;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #2b2520 0%, #191612 100%);
+    color: #f0e6d8;
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
+    box-sizing: border-box;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .param input:focus,
+  .param select:focus {
+    outline: none;
+    border-color: #8f7a62;
+    box-shadow:
+      0 0 0 1px rgba(208, 185, 143, 0.22),
+      0 0 10px rgba(208, 185, 143, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
   .param input[type="range"] {
     padding: 0;
-    height: 4px;
+    height: 18px;
     border: none;
-    background: #3a3530;
+    background: transparent;
+    appearance: none;
     -webkit-appearance: none;
+    box-shadow: none;
+  }
+
+  .param input[type="range"]::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 999px;
+    border: 1px solid #4b4137;
+    background:
+      linear-gradient(180deg, rgba(26, 23, 20, 0.95) 0%, rgba(53, 46, 40, 0.96) 100%);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.65),
+      0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
   .param input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
     -webkit-appearance: none;
-    width: 10px;
-    height: 10px;
-    background: #8a7a6a;
-    border: 1px solid #5a5040;
+    width: 14px;
+    height: 14px;
+    margin-top: -5px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #f2e7d4 0%, #bfaa88 36%, #7e6751 100%);
+    border: 1px solid #5f4c3c;
     cursor: pointer;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .param input[type="range"]::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    border: 1px solid #4b4137;
+    background:
+      linear-gradient(180deg, rgba(26, 23, 20, 0.95) 0%, rgba(53, 46, 40, 0.96) 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
+  }
+
+  .param input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 30%, #f2e7d4 0%, #bfaa88 36%, #7e6751 100%);
+    border: 1px solid #5f4c3c;
+    cursor: pointer;
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
   }
 
   .param input[type="checkbox"] {
-    width: auto;
-    align-self: flex-start;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .slider-control {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 6px 8px;
+    border: 1px solid rgba(96, 80, 64, 0.65);
+    border-radius: 4px;
+    background: linear-gradient(180deg, rgba(29, 24, 20, 0.94) 0%, rgba(20, 17, 14, 0.96) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 1px 0 rgba(0, 0, 0, 0.16);
   }
 
   .slider-control input[type="range"] {
     flex: 1;
   }
 
+  .select-control,
+  .number-control {
+    position: relative;
+  }
+
+  .select-control::after {
+    content: '▾';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #d8c4a0;
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  .select-control select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 28px;
+  }
+
+  .toggle-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    align-self: flex-start;
+    padding: 6px 8px;
+    border: 1px solid rgba(96, 80, 64, 0.65);
+    border-radius: 4px;
+    background: linear-gradient(180deg, rgba(29, 24, 20, 0.94) 0%, rgba(20, 17, 14, 0.96) 100%);
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 1px 0 rgba(0, 0, 0, 0.16);
+  }
+
+  .toggle-track {
+    position: relative;
+    width: 34px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid #52473d;
+    background: linear-gradient(180deg, #221d18 0%, #17130f 100%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55);
+  }
+
+  .toggle-thumb {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #f1e6d3 0%, #bca788 38%, #7f6852 100%);
+    border: 1px solid #5f4c3c;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transition: transform 0.16s ease, background 0.16s ease;
+  }
+
+  .toggle-control input:checked + .toggle-track {
+    border-color: #5d7f56;
+    background: linear-gradient(180deg, #243321 0%, #1a2617 100%);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.55),
+      0 0 8px rgba(143, 199, 143, 0.15);
+  }
+
+  .toggle-control input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(16px);
+    background: radial-gradient(circle at 35% 30%, #e3f7d7 0%, #9dce8f 38%, #547148 100%);
+  }
+
+  .toggle-label {
+    min-width: 24px;
+    color: #d9cdbb;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
   .param-value {
-    width: 70px;
+    min-width: 72px;
     flex-shrink: 0;
     text-align: right;
     font-size: 11px;
-    color: #a8d4a8;
+    color: #dcedc9;
     font-family: 'JetBrains Mono', monospace;
+    padding: 4px 7px;
+    border: 1px solid rgba(112, 136, 98, 0.38);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(33, 48, 27, 0.9) 0%, rgba(24, 34, 20, 0.95) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 1px 0 rgba(0, 0, 0, 0.12);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
