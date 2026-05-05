@@ -151,6 +151,8 @@
           <div class="port">
             <div
               class="port-circle type-{port.type}"
+              class:input-port={port.direction === 'input'}
+              class:output-port={port.direction === 'output'}
               data-port-name={port.name}
               title={port.type === 'control' ? 'Modulation input: connect an output here to modulate this parameter' : `Input: ${port.name}`}
               onmousedown={(e) => { e.stopPropagation(); onPortMouseDown(port.name, port.direction); }}
@@ -169,6 +171,8 @@
             <span class="port-label">{port.name}</span>
             <div
               class="port-circle type-{port.type}"
+              class:input-port={port.direction === 'input'}
+              class:output-port={port.direction === 'output'}
               data-port-name={port.name}
               onmousedown={(e) => { e.stopPropagation(); onPortMouseDown(port.name, port.direction); }}
               onmouseup={(e) => { e.stopPropagation(); onPortMouseUp(port.name, port.direction); }}
@@ -323,39 +327,108 @@
     gap: 6px;
   }
 
+  .ports-column.inputs .port {
+    justify-content: flex-start;
+  }
+
+  .ports-column.outputs .port {
+    justify-content: flex-end;
+  }
+
   .port-circle {
     width: 14px;
     height: 14px;
     border-radius: 50%;
     cursor: crosshair;
-    border: 2px solid #555;
-    transition: all 0.2s;
+    border: 2px solid;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
     position: relative;
     z-index: 10;
+    box-shadow:
+      0 1px 4px rgba(0, 0, 0, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  .port-circle::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background: rgba(10, 12, 18, 0.6);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+
+  .port-circle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.35);
+    opacity: 0.5;
   }
 
   .port-circle:hover {
-    transform: scale(1.2);
-    border-color: #fff;
+    transform: scale(1.18);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 12px rgba(0, 0, 0, 0.36),
+      0 0 12px currentColor;
+  }
+
+  .type-audio {
+    color: #d28b82;
+    background: radial-gradient(circle at 35% 30%, #f1b0a5 0%, #d28b82 38%, #7f4a44 100%);
+    border-color: #b96d65;
   }
 
   .type-control { 
-    background: #3498db;
-    border-radius: 2px;
-    width: 12px;
-    height: 12px;
-    border: 2px solid #3498db;
-    background: transparent;
+    color: #87a5c7;
+    border-radius: 3px;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #87a5c7;
+    background: linear-gradient(180deg, rgba(135, 165, 199, 0.18) 0%, rgba(25, 31, 49, 0.82) 100%);
+  }
+  .type-control::before {
+    inset: 1px;
+    border-radius: 1px;
+  }
+  .type-control::after {
+    border-radius: 1px;
   }
   .type-control:hover {
-    background: rgba(52, 152, 219, 0.3);
+    background: linear-gradient(180deg, rgba(135, 165, 199, 0.32) 0%, rgba(25, 31, 49, 0.88) 100%);
   }
-  .type-gate { background: #2ecc71; }
+  .type-gate {
+    color: #8fc78f;
+    background: radial-gradient(circle at 35% 30%, #c9f0be 0%, #8fc78f 42%, #50734a 100%);
+    border-color: #77aa73;
+  }
+
+  .type-trigger {
+    color: #e0bc77;
+    background: radial-gradient(circle at 35% 30%, #f7df9d 0%, #e0bc77 40%, #8a6830 100%);
+    border-color: #c99d4e;
+  }
+
+  .input-port {
+    margin-right: 2px;
+  }
+
+  .output-port {
+    margin-left: 2px;
+  }
 
   .port-label {
     font-size: 11px;
-    color: #aaa;
-    text-transform: capitalize;
+    color: #d0d4df;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
   }
 
   .step-grid {
