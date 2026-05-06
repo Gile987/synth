@@ -191,14 +191,18 @@
   .module {
     position: absolute;
     width: 220px;
-    background: linear-gradient(180deg, #4a4035 0%, #3a3025 50%, #2a2018 100%);
-    border: 2px solid #5a5040;
-    border-radius: 3px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 12%),
+      linear-gradient(180deg, #4f4438 0%, #3a3025 46%, #261d16 100%);
+    border: 1px solid #6a5c4d;
+    border-radius: 6px;
     cursor: default;
     user-select: none;
     box-shadow: 
-      0 4px 15px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 10px 24px rgba(0, 0, 0, 0.46),
+      0 2px 0 rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
   }
 
   .module::before {
@@ -212,37 +216,54 @@
     background: #6a6050;
     border-radius: 2px;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+    opacity: 0.85;
+  }
+
+  .module::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    pointer-events: none;
+    opacity: 0.7;
   }
 
   .module.selected {
-    border-color: #7a6a58;
+    border-color: #97806a;
     box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.7),
-      0 0 0 2px rgba(200, 180, 140, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 12px 28px rgba(0, 0, 0, 0.5),
+      0 0 0 2px rgba(214, 186, 145, 0.24),
+      0 0 18px rgba(214, 186, 145, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
   }
 
   .module.dragging {
     z-index: 20;
     box-shadow: 
-      0 8px 30px rgba(0, 0, 0, 0.7),
-      0 0 20px rgba(200, 180, 140, 0.15);
+      0 18px 36px rgba(0, 0, 0, 0.58),
+      0 0 24px rgba(214, 186, 145, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .module-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 12px 10px;
-    border-radius: 3px 3px 0 0;
+    padding: 14px 12px 11px;
+    border-radius: 6px 6px 0 0;
     cursor: grab;
     gap: 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.34);
     font-family: 'Inter', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
     font-size: 15px;
     font-weight: 500;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.18);
   }
 
   .module-header:active {
@@ -268,7 +289,8 @@
 
   .title {
     flex: 1;
-    font-weight: 400;
+    font-weight: 500;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.24);
   }
 
   .delete-btn {
@@ -285,6 +307,9 @@
     font-size: 14px;
     line-height: 1;
     font-family: 'JetBrains Mono', monospace;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 1px 0 rgba(0, 0, 0, 0.2);
   }
 
   .delete-btn:hover {
@@ -294,13 +319,23 @@
 
   .module-body {
     padding: 12px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0%, transparent 18%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 100%);
   }
 
   .ports-section {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
+    padding: 10px 10px 8px;
+    border: 1px solid rgba(108, 94, 77, 0.55);
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(30, 25, 21, 0.92) 0%, rgba(19, 16, 13, 0.96) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
   }
 
   .ports-column {
@@ -421,12 +456,27 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 10px;
+    border: 1px solid rgba(108, 94, 77, 0.48);
+    border-radius: 5px;
+    background:
+      linear-gradient(180deg, rgba(31, 25, 21, 0.9) 0%, rgba(20, 16, 13, 0.96) 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.22);
   }
 
   .param {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid rgba(117, 98, 80, 0.26);
+  }
+
+  .param:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
   }
 
   .param label {
@@ -539,10 +589,12 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 1px 0 rgba(0, 0, 0, 0.16);
+    min-width: 0;
   }
 
   .slider-control input[type="range"] {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .select-control,
@@ -629,7 +681,8 @@
   }
 
   .param-value {
-    min-width: 72px;
+    min-width: 0;
+    max-width: 64px;
     flex-shrink: 0;
     text-align: right;
     font-size: 11px;
@@ -642,6 +695,7 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
       0 1px 0 rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

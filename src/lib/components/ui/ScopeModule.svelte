@@ -605,10 +605,12 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       0 1px 0 rgba(0, 0, 0, 0.16);
+    min-width: 0;
   }
 
   .slider-control input[type="range"] {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .toggle-control {
@@ -673,7 +675,8 @@
   }
 
   .param-value {
-    min-width: 72px;
+    min-width: 0;
+    max-width: 64px;
     flex-shrink: 0;
     text-align: right;
     font-size: 11px;
@@ -686,6 +689,7 @@
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
       0 1px 0 rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
