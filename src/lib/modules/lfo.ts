@@ -42,6 +42,7 @@ export const LFO_DEFINITION: ModuleDefinition = {
       max: 20,
       step: 0.1,
       defaultValue: LFO_DEFAULT_RATE,
+      scale: 'log',
     },
     {
       name: 'amplitude',

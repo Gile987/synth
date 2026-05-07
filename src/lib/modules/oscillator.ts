@@ -39,6 +39,7 @@ export const OSCILLATOR_DEFINITION: ModuleDefinition = {
       min: MIN_FREQUENCY,
       max: MAX_FREQUENCY,
       defaultValue: OSCILLATOR_DEFAULT_FREQUENCY,
+      scale: 'log',
     },
     {
       name: 'detune',
