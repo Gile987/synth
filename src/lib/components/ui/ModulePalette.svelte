@@ -158,11 +158,11 @@
 
 <style>
   .palette {
-    width: 200px;
+    width: 260px;
     background: linear-gradient(180deg, #3a3530 0%, #2a2520 100%);
     border-right: 2px solid #4a4035;
-    padding: 16px 12px;
-    overflow-y: auto;
+    padding: 16px 16px 16px 12px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     box-shadow: 
@@ -226,6 +226,10 @@
     gap: 4px;
     flex: 1;
     overflow-y: auto;
+    min-height: 0;
+    padding-right: 12px;
+    margin-right: -12px;
+    box-sizing: border-box;
   }
 
   .category-section {

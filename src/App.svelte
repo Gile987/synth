@@ -376,4 +376,31 @@
     border-color: #5a5040;
     color: #d4c4a8;
   }
+
+  /* Global Scrollbar Styles - WebKit only (Chrome, Edge, Safari) */
+  /* Firefox scrollbar-color/width BREAK WebKit styling in Edge, so we use WebKit only */
+  :global(*::-webkit-scrollbar) {
+    width: 8px;
+    height: 8px;
+  }
+
+  :global(*::-webkit-scrollbar-track) {
+    background: #2a2520;
+    border: 1px solid #3a3530;
+  }
+
+  :global(*::-webkit-scrollbar-thumb) {
+    background: #4a4035;
+    border: 1px solid #5a5040;
+    border-radius: 0;
+  }
+
+  :global(*::-webkit-scrollbar-thumb:hover) {
+    background: #5a5045;
+  }
+
+  :global(*::-webkit-scrollbar-corner) {
+    background: #2a2520;
+    border: 1px solid #3a3530;
+  }
 </style>
