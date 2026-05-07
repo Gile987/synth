@@ -39,6 +39,7 @@ export const MULTI_FX_DEFINITION: ModuleDefinition = {
       min: 10,
       max: 2000,
       defaultValue: 100,
+      scale: 'log',
     },
     {
       name: 'bitCrushEnabled',

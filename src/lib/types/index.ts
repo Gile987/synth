@@ -26,6 +26,7 @@ export interface ParamDefinition {
   readonly step?: number;
   readonly defaultValue: ParamValue;
   readonly options?: readonly string[];
+  readonly scale?: 'linear' | 'log'; // For logarithmic parameter scaling (e.g., frequency)
 }
 
 /**

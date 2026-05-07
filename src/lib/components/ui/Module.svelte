@@ -54,6 +54,23 @@
         return '';
     }
   }
+
+  // Logarithmic scaling helpers for frequency controls
+  function valueToPosition(value: number, min: number, max: number): number {
+    // Convert actual value to 0-1 slider position using log scale
+    const minLog = Math.log(min);
+    const maxLog = Math.log(max);
+    const valueLog = Math.log(value);
+    return (valueLog - minLog) / (maxLog - minLog);
+  }
+
+  function positionToValue(position: number, min: number, max: number): number {
+    // Convert 0-1 slider position to actual value using log scale
+    const minLog = Math.log(min);
+    const maxLog = Math.log(max);
+    const valueLog = minLog + position * (maxLog - minLog);
+    return Math.exp(valueLog);
+  }
 </script>
 
 <div
@@ -124,24 +141,52 @@
         <div class="param">
           <label for={paramId}>{param.label}</label>
           {#if param.controlType === 'knob' || param.controlType === 'slider'}
+            {@const isLog = param.scale === 'log'}
+            {@const min = param.min ?? 0}
+            {@const max = param.max ?? 100}
+            {@const sliderValue = isLog && typeof currentValue === 'number' 
+              ? valueToPosition(currentValue as number, min, max) 
+              : currentValue}
             <div class="slider-control">
               <input
                 id={paramId}
                 type="range"
-                min={param.min}
-                max={param.max}
-                step={param.step || 1}
-                value={currentValue}
+                min={isLog ? 0 : min}
+                max={isLog ? 1 : max}
+                step={isLog ? 0.001 : (param.step || 1)}
+                value={sliderValue}
                 oninput={(e) => {
-                  const newValue = parseFloat(e.currentTarget.value);
+                  const sliderPos = parseFloat(e.currentTarget.value);
+                  const newValue = isLog 
+                    ? positionToValue(sliderPos, min, max)
+                    : sliderPos;
                   handleParamChange(param.name, newValue);
                   const display = e.currentTarget.nextElementSibling;
                   if (display) {
-                    display.textContent = newValue + getUnit(param.name);
+                    // Determine decimals based on step size, not range
+                    const step = param.step;
+                    let decimals = 0;
+                    if (step !== undefined && step > 0) {
+                      if (step < 0.01) decimals = 3;
+                      else if (step < 0.1) decimals = 2;
+                      else if (step < 1) decimals = 1;
+                    }
+                    const displayValue = newValue.toFixed(decimals);
+                    display.textContent = displayValue + getUnit(param.name);
                   }
                 }}
               />
-              <span class="param-value">{currentValue}{getUnit(param.name)}</span>
+              <span class="param-value">
+                {#if typeof currentValue === 'number'}
+                  {@const step = param.step}
+                  {@const decimals = step !== undefined && step > 0 
+                    ? (step < 0.01 ? 3 : step < 0.1 ? 2 : step < 1 ? 1 : 0)
+                    : 0}
+                  {currentValue.toFixed(decimals)}{getUnit(param.name)}
+                {:else}
+                  {currentValue}{getUnit(param.name)}
+                {/if}
+              </span>
             </div>
           {:else if param.controlType === 'select'}
             <div class="select-control">
@@ -681,9 +726,8 @@
   }
 
   .param-value {
-    min-width: 0;
-    max-width: 64px;
-    flex-shrink: 0;
+    width: 70px;
+    flex: 0 0 70px;
     text-align: right;
     font-size: 11px;
     color: #dcedc9;

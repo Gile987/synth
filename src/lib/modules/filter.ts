@@ -54,6 +54,7 @@ export const FILTER_DEFINITION: ModuleDefinition = {
       min: MIN_FREQUENCY,
       max: MAX_FREQUENCY,
       defaultValue: FILTER_DEFAULT_FREQUENCY,
+      scale: 'log',
     },
     {
       name: 'q',
