@@ -102,7 +102,7 @@
     />
 
     <path
-      class="cable-glow"
+      class="cable-glow type-{path.type || 'default'}"
       class:selected={isSelected}
       {d}
       style="stroke: {glow}"
@@ -110,7 +110,7 @@
     
     <!-- Visible cable -->
     <path
-      class="cable"
+      class="cable type-{path.type || 'default'}"
       class:selected={isSelected}
       {d}
       style="stroke: {color}; --cable-glow: {glow};"
@@ -124,12 +124,12 @@
     {#if start}
       {@const tempGlow = getCableGlow(type)}
       <path
-        class="cable-glow temp"
+        class="cable-glow temp type-{type || 'default'}"
         d={getCablePath(start, { x: tempCable.currentX, y: tempCable.currentY })}
         style="stroke: {tempGlow}"
       />
       <path
-        class="cable temp"
+        class="cable temp type-{type || 'default'}"
         d={getCablePath(start, { x: tempCable.currentX, y: tempCable.currentY })}
         style="stroke: {getCableColor(type)}; --cable-glow: {tempGlow};"
       />
@@ -214,5 +214,48 @@
 
   .cable-glow.temp {
     opacity: 0.7;
+  }
+
+  /* Signal flow animations - glow layer only, cables stay static */
+  @keyframes audio-pulse {
+    0%, 100% { opacity: 0.5; filter: blur(2.5px); }
+    50% { opacity: 0.9; filter: blur(4px); }
+  }
+
+  @keyframes gate-flash {
+    0%, 100% { opacity: 0.5; filter: blur(2.5px); }
+    10% { opacity: 1; filter: blur(5px); }
+    20% { opacity: 0.5; filter: blur(2.5px); }
+  }
+
+  @keyframes trigger-flash {
+    0%, 100% { opacity: 0.5; filter: blur(2.5px); }
+    5% { opacity: 1; filter: blur(6px); }
+    15% { opacity: 0.5; filter: blur(2.5px); }
+  }
+
+  @keyframes control-pulse {
+    0%, 100% { opacity: 0.4; filter: blur(2px); }
+    50% { opacity: 0.75; filter: blur(3.5px); }
+  }
+
+  .cable-glow.type-audio {
+    animation: audio-pulse 1.5s ease-in-out infinite;
+  }
+
+  .cable-glow.type-gate {
+    animation: gate-flash 2s ease-out infinite;
+  }
+
+  .cable-glow.type-trigger {
+    animation: trigger-flash 1.8s ease-out infinite;
+  }
+
+  .cable-glow.type-control {
+    animation: control-pulse 2.5s ease-in-out infinite;
+  }
+
+  .cable-glow.selected {
+    animation-play-state: paused;
   }
 </style>
