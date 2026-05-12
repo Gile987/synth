@@ -235,8 +235,8 @@
   }
 
   @keyframes control-pulse {
-    0%, 100% { opacity: 0.4; filter: blur(2px); }
-    50% { opacity: 0.75; filter: blur(3.5px); }
+    0%, 100% { opacity: 0.5; filter: blur(2.5px); }
+    50% { opacity: 0.9; filter: blur(5px); }
   }
 
   .cable-glow.type-audio {
