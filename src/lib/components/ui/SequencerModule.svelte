@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { synthService, selectedModuleId, selectedConnectionId } from '$stores';
+  import { synthService, selectedModuleId, selectedConnectionId, connections } from '$stores';
   import type { ModuleInstance, ModuleDefinition, PortDefinition, ParamValue } from '$types';
   import HelpIcon from './HelpIcon.svelte';
 
@@ -95,6 +95,17 @@
   const inputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'input'));
   const outputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'output'));
 
+  // Reactive set of connected input ports
+  const connectedInputs = $derived.by(() => {
+    const connected = new Set<string>();
+    for (const conn of $connections.values()) {
+      if (conn.targetModuleId === module.id) {
+        connected.add(conn.targetPortName);
+      }
+    }
+    return connected;
+  });
+
   // Reactive params that update when module changes
   let rateValue = $derived(getNumberParam(module.params, 'rate', 4));
   let playingValue = $derived(getBooleanParam(module.params, 'playing', true));
@@ -159,7 +170,9 @@
               onmouseup={(e) => { e.stopPropagation(); onPortMouseUp(port.name, port.direction); }}
               role="button"
               tabindex="0"
-            ></div>
+            >
+              <span class="port-led type-{port.type}" class:active={connectedInputs.has(port.name)}></span>
+            </div>
             <span class="port-label">{port.name}</span>
           </div>
         {/each}
@@ -388,6 +401,57 @@
       0 0 0 1px rgba(255, 255, 255, 0.1),
       0 0 12px rgba(0, 0, 0, 0.36),
       0 0 12px currentColor;
+  }
+
+  .port-led {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(40, 40, 40, 0.8);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+    transition: all 0.15s ease;
+    z-index: 12;
+    opacity: 0.6;
+  }
+
+  .port-led.active.type-audio {
+    background: #ff9999;
+    box-shadow:
+      0 0 4px #ff6666,
+      0 0 8px #ff4444,
+      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+  }
+
+  .port-led.active.type-control {
+    background: #99ccff;
+    box-shadow:
+      0 0 4px #66b3ff,
+      0 0 8px #3399ff,
+      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+  }
+
+  .port-led.active.type-gate {
+    background: #99ff99;
+    box-shadow:
+      0 0 4px #66ff66,
+      0 0 8px #33ff33,
+      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+  }
+
+  .port-led.active.type-trigger {
+    background: #ffee99;
+    box-shadow:
+      0 0 4px #ffdd66,
+      0 0 8px #ffcc33,
+      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
+    opacity: 1;
   }
 
   .type-audio {
