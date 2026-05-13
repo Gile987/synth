@@ -1,12 +1,11 @@
 import { get } from 'svelte/store';
 import type { PatchState, ModuleInstance, SerializableModuleInstance } from '$types';
 import { modules, connections } from './patch';
-import { synthService } from './service';
 
 const CURRENT_VERSION = '1.0.0';
+const SUPPORTED_VERSIONS = ['1.0.0'];
 const LOCAL_STORAGE_KEY = 'modular-synth-presets';
 const AUTOSAVE_PREF_KEY = 'modular-synth-autosave-pref';
-const AUTOSAVE_DELAY = 5000;
 
 interface StoredPresets {
   presets: Record<string, PatchState>;
@@ -20,8 +19,6 @@ interface PresetEntry {
 }
 
 class PresetManager {
-  private autosaveTimer: ReturnType<typeof setTimeout> | null = null;
-  private lastSavedState: string = '';
 
   /**
    * Convert ModuleInstance map to serializable array
@@ -120,16 +117,22 @@ class PresetManager {
   }
 
   /**
-   * Validate patch state structure
+   * Validate patch state structure and version compatibility
    */
   private validatePatchState(state: unknown): state is PatchState {
     if (typeof state !== 'object' || state === null) return false;
-    
+
     const candidate = state as Record<string, unknown>;
-    
+
     if (!Array.isArray(candidate.modules)) return false;
     if (!Array.isArray(candidate.connections)) return false;
     if (typeof candidate.version !== 'string') return false;
+
+    // Version compatibility check
+    if (!SUPPORTED_VERSIONS.includes(candidate.version)) {
+      console.error(`[preset] Unsupported patch version: ${candidate.version}. Supported versions: ${SUPPORTED_VERSIONS.join(', ')}`);
+      return false;
+    }
 
     // Validate modules
     for (const mod of candidate.modules) {
@@ -170,7 +173,6 @@ class PresetManager {
       stored.lastModified = new Date().toISOString();
       
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(stored));
-      this.lastSavedState = JSON.stringify(stateToSave);
     } catch (err) {
       console.error('[preset] Failed to save to localStorage:', err);
     }
@@ -268,67 +270,6 @@ class PresetManager {
   }
 
   /**
-   * Auto-save to localStorage on changes (debounced)
-   */
-  public triggerAutosave(onSave?: () => void): void {
-    if (!this.getAutosavePreference()) return;
-
-    if (this.autosaveTimer) {
-      clearTimeout(this.autosaveTimer);
-    }
-
-    this.autosaveTimer = setTimeout(() => {
-      const currentState = this.getCurrentPatchState();
-      const currentStateJson = JSON.stringify(currentState);
-      
-      // Only save if state has changed
-      if (currentStateJson !== this.lastSavedState) {
-        if (currentState.modules.length === 0) {
-          this.clearAutosave();
-        } else {
-          this.saveToLocalStorage('autosave', currentState);
-        }
-        console.log('[preset] Auto-saved patch');
-        if (onSave) onSave();
-      }
-    }, AUTOSAVE_DELAY);
-  }
-
-  public getAutosavePreference(): boolean {
-    try {
-      const pref = localStorage.getItem(AUTOSAVE_PREF_KEY);
-      return pref !== null ? JSON.parse(pref) : true;
-    } catch {
-      return true;
-    }
-  }
-
-  public setAutosavePreference(enabled: boolean): void {
-    try {
-      localStorage.setItem(AUTOSAVE_PREF_KEY, JSON.stringify(enabled));
-    } catch (err) {
-      console.error('[preset] Failed to save autosave preference:', err);
-    }
-  }
-
-  public clearSession(): void {
-    // Get all module IDs and remove them properly to stop audio
-    const moduleMap = get(modules);
-    const moduleIds = Array.from(moduleMap.keys());
-    
-    // Remove each module through synthService to properly dispose audio nodes
-    for (const id of moduleIds) {
-      synthService.removeModule(id);
-    }
-    
-    // Clear connections store
-    connections.clear();
-    
-    // Clear autosave
-    this.clearAutosave();
-  }
-
-  /**
    * Check if autosave exists
    */
   public hasAutosave(): boolean {
@@ -348,6 +289,37 @@ class PresetManager {
    */
   public clearAutosave(): void {
     this.deletePreset('autosave');
+  }
+
+  /**
+   * Get autosave preference from localStorage
+   */
+  public getAutosavePreference(): boolean {
+    try {
+      const pref = localStorage.getItem(AUTOSAVE_PREF_KEY);
+      return pref !== 'false'; // Default to true
+    } catch {
+      return true;
+    }
+  }
+
+  /**
+   * Set autosave preference in localStorage
+   */
+  public setAutosavePreference(enabled: boolean): void {
+    try {
+      localStorage.setItem(AUTOSAVE_PREF_KEY, String(enabled));
+    } catch (err) {
+      console.error('[preset] Failed to save autosave preference:', err);
+    }
+  }
+
+  /**
+   * Clear session by removing autosave and resetting stores
+   */
+  public clearSession(): void {
+    this.clearAutosave();
+    // Note: Store clearing is handled by synthService.dispose() in App.svelte
   }
 }
 

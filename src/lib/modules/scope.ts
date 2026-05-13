@@ -1,6 +1,6 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition } from '$types';
-import { ANALYSER_FFT_SIZE, SCOPE_BUFFER_SIZE, SCRIPT_PROCESSOR_BUFFER_SIZE } from '$core/constants';
+import { ANALYSER_FFT_SIZE, SCOPE_BUFFER_SIZE } from '$core/constants';
 
 export const SCOPE_HELP = {
   title: 'Oscilloscope',
@@ -27,8 +27,9 @@ export const SCOPE_DEFINITION: ModuleDefinition = {
 export class ScopeModule extends BaseModule {
   private inputGain: GainNode | undefined;
   private analyser: AnalyserNode | undefined;
-  private scriptProcessor: ScriptProcessorNode | undefined;
   private silentGain: GainNode | undefined;
+  private animationFrameId: number | undefined;
+  private analyserTimeDomainData: Float32Array = new Float32Array(ANALYSER_FFT_SIZE);
   private waveformData: Float32Array = new Float32Array(SCOPE_BUFFER_SIZE);
   private dataUpdateCallback: ((data: Float32Array) => void) | null = null;
 
@@ -42,30 +43,41 @@ export class ScopeModule extends BaseModule {
     this.inputGain.gain.value = this.getNumberParam('gain') ?? 1;
     this.analyser = ctx.createAnalyser();
     this.analyser.fftSize = ANALYSER_FFT_SIZE;
-    this.scriptProcessor = ctx.createScriptProcessor(SCRIPT_PROCESSOR_BUFFER_SIZE, 1, 1);
     this.inputGain.connect(this.analyser);
-    this.analyser.connect(this.scriptProcessor);
     // Connect to silent gain (not destination) to avoid audio output leak
     this.silentGain = ctx.createGain();
     this.silentGain.gain.value = 0;
-    this.scriptProcessor.connect(this.silentGain);
-    
-    this.scriptProcessor.onaudioprocess = (event) => {
-      if (this.getBooleanParam('freeze') ?? false) return;
-      const inputData = event.inputBuffer.getChannelData(0);
-      this.waveformData.set(inputData);
-      if (this.dataUpdateCallback) this.dataUpdateCallback(this.waveformData);
-    };
+    this.analyser.connect(this.silentGain);
+    this.startWaveformCapture();
 
     this.registerPort({ name: 'input', type: 'audio', direction: 'input', node: this.inputGain });
   }
 
+  private startWaveformCapture(): void {
+    const pollWaveform = () => {
+      if (!this.analyser) return;
+
+      this.animationFrameId = window.requestAnimationFrame(pollWaveform);
+
+      if (this.getBooleanParam('freeze') ?? false) return;
+
+      this.analyser.getFloatTimeDomainData(this.analyserTimeDomainData as Float32Array<ArrayBuffer>);
+      const sourceOffset = Math.max(0, this.analyserTimeDomainData.length - this.waveformData.length);
+      this.waveformData.set(this.analyserTimeDomainData.subarray(sourceOffset));
+      this.dataUpdateCallback?.(this.waveformData);
+    };
+
+    pollWaveform();
+  }
+
   protected destroyNodes(): void {
-    this.scriptProcessor?.disconnect();
+    if (this.animationFrameId !== undefined) {
+      window.cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
+    }
     this.analyser?.disconnect();
     this.inputGain?.disconnect();
     this.silentGain?.disconnect();
-    this.scriptProcessor = undefined;
     this.analyser = undefined;
     this.inputGain = undefined;
     this.silentGain = undefined;
@@ -74,5 +86,9 @@ export class ScopeModule extends BaseModule {
 
   onDataUpdate(callback: (data: Float32Array) => void): void {
     this.dataUpdateCallback = callback;
+  }
+
+  offDataUpdate(): void {
+    this.dataUpdateCallback = null;
   }
 }

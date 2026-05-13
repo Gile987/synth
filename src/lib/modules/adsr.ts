@@ -1,6 +1,11 @@
 import { BaseModule } from '$core/base-module';
 import type { ModuleDefinition, ParamValue } from '$types';
 import { GATE_MONITOR_BUFFER_SIZE } from '$core/constants';
+import workletUrl from './adsr-gate-monitor.worklet.js?url';
+
+const GATE_THRESHOLD = 0.3;
+const GATE_ANALYSER_FFT_SIZE = 512;
+const ADSR_GATE_MONITOR_WORKLET_NAME = 'adsr-gate-monitor';
 
 export const ADSR_DEFAULT_ATTACK = 0.1;
 export const ADSR_DEFAULT_DECAY = 0.3;
@@ -85,15 +90,20 @@ export const ADSR_DEFINITION: ModuleDefinition = {
 };
 
 export class ADSRModule extends BaseModule {
+  private static gateMonitorWorkletLoaders = new WeakMap<AudioContext, Promise<void>>();
+
   private constantSource: ConstantSourceNode | undefined;
   private gainNode: GainNode | undefined;
   private depthNode: GainNode | undefined;
   private gateInputNode: GainNode | undefined;
-  private gateMonitor: ScriptProcessorNode | undefined;
+  private gateMonitor: AudioWorkletNode | undefined;
+  private gateAnalyser: AnalyserNode | undefined;
+  private gateAnalyserBuffer = new Float32Array(GATE_ANALYSER_FFT_SIZE);
+  private gatePollInterval: number | undefined;
   private silentGain: GainNode | undefined;
   private isGateHigh = false;
-  private lastGateValue = 0;
   private autoTriggerInterval: number | undefined;
+  private autoTriggerReleaseTimeout: number | undefined;
 
   constructor(id: string) {
     super(id, ADSR_DEFINITION);
@@ -119,14 +129,8 @@ export class ADSRModule extends BaseModule {
     this.gateInputNode = ctx.createGain();
     this.gateInputNode.gain.value = 1;
 
-    // Use ScriptProcessorNode to monitor gate signal level
-    this.gateMonitor = ctx.createScriptProcessor(GATE_MONITOR_BUFFER_SIZE, 1, 1);
-    this.gateInputNode.connect(this.gateMonitor);
-    
-    // Connect monitor to a silent gain node (not destination!) to keep it processing
     this.silentGain = ctx.createGain();
     this.silentGain.gain.value = 0;
-    this.gateMonitor.connect(this.silentGain);
 
     this.registerPort({
       name: 'gate',
@@ -144,7 +148,7 @@ export class ADSRModule extends BaseModule {
 
     this.constantSource.start();
 
-    // Monitor gate input for changes using audio processing
+    // Monitor gate input for changes using AudioWorklet when available
     this.setupGateMonitoring();
     
     // Start auto-trigger for demo purposes
@@ -163,7 +167,7 @@ export class ADSRModule extends BaseModule {
 
       this.trigger();
 
-      setTimeout(() => {
+      this.autoTriggerReleaseTimeout = window.setTimeout(() => {
         this.release();
       }, (attack + decay + 0.5) * 1000);
 
@@ -174,40 +178,127 @@ export class ADSRModule extends BaseModule {
   }
 
   private setupGateMonitoring(): void {
-    if (!this.gateMonitor) return;
-    
-    this.gateMonitor.onaudioprocess = (event) => {
-      const inputData = event.inputBuffer.getChannelData(0);
-      
-      // Calculate average amplitude
+    if (!this.gateInputNode || !this.silentGain) return;
+
+    this.setupAnalyserGateMonitoring();
+
+    if (typeof AudioWorkletNode !== 'undefined' && this.context.audioWorklet) {
+      void this.setupAudioWorkletGateMonitoring();
+    }
+  }
+
+  private static ensureGateMonitorWorklet(context: AudioContext): Promise<void> {
+    const existingLoader = ADSRModule.gateMonitorWorkletLoaders.get(context);
+    if (existingLoader) {
+      return existingLoader;
+    }
+
+    const loader = context.audioWorklet.addModule(workletUrl)
+      .catch((error) => {
+        ADSRModule.gateMonitorWorkletLoaders.delete(context);
+        throw error;
+      });
+
+    ADSRModule.gateMonitorWorkletLoaders.set(context, loader);
+    return loader;
+  }
+
+  private async setupAudioWorkletGateMonitoring(): Promise<void> {
+    try {
+      await ADSRModule.ensureGateMonitorWorklet(this.context);
+
+      if (this.state === 'disposed' || !this.gateInputNode || !this.silentGain) {
+        return;
+      }
+
+      this.stopAnalyserGateMonitoring();
+
+      this.gateMonitor = new AudioWorkletNode(this.context, ADSR_GATE_MONITOR_WORKLET_NAME, {
+        numberOfInputs: 1,
+        numberOfOutputs: 1,
+        outputChannelCount: [1],
+        processorOptions: {
+          threshold: GATE_THRESHOLD,
+          bufferSize: GATE_MONITOR_BUFFER_SIZE,
+        },
+      });
+
+      this.gateMonitor.port.onmessage = (event: MessageEvent<{ type?: string; avgAmplitude?: number }>) => {
+        const message = event.data;
+        if (message.type === 'gate-on') {
+          this.setGate(true);
+        } else if (message.type === 'gate-off') {
+          this.setGate(false);
+        }
+      };
+
+      this.gateInputNode.connect(this.gateMonitor);
+      this.gateMonitor.connect(this.silentGain);
+    } catch {
+      if (this.state !== 'disposed') {
+        this.setupAnalyserGateMonitoring();
+      }
+    }
+  }
+
+  private setupAnalyserGateMonitoring(): void {
+    if (!this.gateInputNode || !this.silentGain || this.gateAnalyser) {
+      return;
+    }
+
+    this.gateAnalyser = this.context.createAnalyser();
+    this.gateAnalyser.fftSize = GATE_ANALYSER_FFT_SIZE;
+    this.gateInputNode.connect(this.gateAnalyser);
+    this.gateAnalyser.connect(this.silentGain);
+
+    const pollGate = () => {
+      if (!this.gateAnalyser) return;
+
+      this.gateAnalyser.getFloatTimeDomainData(this.gateAnalyserBuffer as Float32Array<ArrayBuffer>);
+
       let sum = 0;
-      for (let i = 0; i < inputData.length; i++) {
-        sum += Math.abs(inputData[i] ?? 0);
+      const startIndex = this.gateAnalyserBuffer.length - GATE_MONITOR_BUFFER_SIZE;
+      for (let i = startIndex; i < this.gateAnalyserBuffer.length; i += 1) {
+        sum += Math.abs(this.gateAnalyserBuffer[i] ?? 0);
       }
-      const avgAmplitude = sum / inputData.length;
-      
-      // Detect gate state (threshold at 0.3)
-      const wasLow = this.lastGateValue <= 0.3;
-      const isHigh = avgAmplitude > 0.3;
-      
-      if (isHigh && wasLow) {
-        // Rising edge - trigger envelope
-        this.trigger();
-        this.isGateHigh = true;
-      } else if (!isHigh && !wasLow) {
-        // Falling edge - release envelope
-        this.release();
-        this.isGateHigh = false;
-      }
-      
-      this.lastGateValue = avgAmplitude;
+
+      const avgAmplitude = sum / GATE_MONITOR_BUFFER_SIZE;
+      this.setGate(avgAmplitude > GATE_THRESHOLD);
     };
+
+    pollGate();
+
+    const pollIntervalMs = Math.max(4, Math.round((GATE_MONITOR_BUFFER_SIZE / this.context.sampleRate) * 1000));
+    this.gatePollInterval = window.setInterval(pollGate, pollIntervalMs);
+  }
+
+  private stopAnalyserGateMonitoring(): void {
+    if (this.gatePollInterval !== undefined) {
+      clearInterval(this.gatePollInterval);
+      this.gatePollInterval = undefined;
+    }
+
+    if (this.gateAnalyser !== undefined) {
+      if (this.gateInputNode !== undefined) {
+        try {
+          this.gateInputNode.disconnect(this.gateAnalyser);
+        } catch {
+          // Analyser connection may already be gone.
+        }
+      }
+      this.gateAnalyser.disconnect();
+      this.gateAnalyser = undefined;
+    }
   }
 
   protected destroyNodes(): void {
     if (this.autoTriggerInterval !== undefined) {
       clearTimeout(this.autoTriggerInterval);
       this.autoTriggerInterval = undefined;
+    }
+    if (this.autoTriggerReleaseTimeout !== undefined) {
+      clearTimeout(this.autoTriggerReleaseTimeout);
+      this.autoTriggerReleaseTimeout = undefined;
     }
     if (this.constantSource !== undefined) {
       this.constantSource.stop();
@@ -227,9 +318,11 @@ export class ADSRModule extends BaseModule {
       this.gateInputNode = undefined;
     }
     if (this.gateMonitor !== undefined) {
+      this.gateMonitor.port.onmessage = null;
       this.gateMonitor.disconnect();
       this.gateMonitor = undefined;
     }
+    this.stopAnalyserGateMonitoring();
     if (this.silentGain !== undefined) {
       this.silentGain.disconnect();
       this.silentGain = undefined;

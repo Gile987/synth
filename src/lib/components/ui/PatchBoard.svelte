@@ -1,8 +1,6 @@
 <script lang="ts">
   import { modules, connections, moduleDefinitions, dragState, cableState, selectedModuleId, selectedConnectionId, synthService } from '$stores';
-  import Module from './Module.svelte';
-  import SequencerModule from './SequencerModule.svelte';
-  import ScopeModule from './ScopeModule.svelte';
+  import { getModuleComponent, getModuleWidth } from '$stores/module-registry';
   import CableLayer from './CableLayer.svelte';
   import type { Position, PortType, ModuleDefinition, ModuleInstance, Connection } from '$types';
 
@@ -34,8 +32,8 @@
     
     // Find the furthest module position
     moduleList.forEach(module => {
-      // Standard module is ~220px wide, sequencer is ~320px
-      const moduleWidth = module.type === 'sequencer' ? 320 : 220;
+      // Use registry metadata for module dimensions
+      const moduleWidth = getModuleWidth(module.type);
       const moduleHeight = 300; // Approximate module height
       
       const moduleRight = module.position.x + moduleWidth;
@@ -105,7 +103,7 @@
       // Check if we need to expand the board
       const module = $modules.get($dragState.moduleId);
       if (module) {
-        const moduleWidth = module.type === 'sequencer' ? 320 : 220;
+        const moduleWidth = getModuleWidth(module.type);
         const moduleHeight = 300;
         const moduleRight = snappedX + moduleWidth;
         const moduleBottom = snappedY + moduleHeight;
@@ -264,35 +262,16 @@
 
     {#each moduleList as module (module.id)}
       {@const def = getModuleDefinition(module.type)}
+      {@const ModuleComponent = getModuleComponent(module.type)}
       {#if def}
-        {#if module.type === 'sequencer'}
-          <SequencerModule
-            {module}
-            definition={def}
-            isDragging={$dragState?.moduleId === module.id}
-            onDragStart={(e) => handleModuleDragStart(module.id, e)}
-            onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
-            onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
-          />
-        {:else if module.type === 'scope'}
-          <ScopeModule
-            {module}
-            definition={def}
-            isDragging={$dragState?.moduleId === module.id}
-            onDragStart={(e) => handleModuleDragStart(module.id, e)}
-            onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
-            onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
-          />
-        {:else}
-          <Module
-            {module}
-            definition={def}
-            isDragging={$dragState?.moduleId === module.id}
-            onDragStart={(e) => handleModuleDragStart(module.id, e)}
-            onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
-            onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
-          />
-        {/if}
+        <ModuleComponent
+          {module}
+          definition={def}
+          isDragging={$dragState?.moduleId === module.id}
+          onDragStart={(e) => handleModuleDragStart(module.id, e)}
+          onPortMouseDown={(name, dir) => handlePortMouseDown(module.id, name, dir)}
+          onPortMouseUp={(name, dir) => handlePortMouseUp(module.id, name, dir)}
+        />
       {/if}
     {/each}
   </div>

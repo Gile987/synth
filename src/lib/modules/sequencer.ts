@@ -89,11 +89,35 @@ export class SequencerModule extends BaseModule {
 
   constructor(id: string) {
     super(id, SEQUENCER_DEFINITION);
-    // Initialize with a simple pattern
+    // Initialize with a simple pattern (will be overridden if stepPattern param exists)
     this.stepData[0] = true;
     this.stepData[4] = true;
     this.stepData[8] = true;
     this.stepData[12] = true;
+  }
+
+  /**
+   * Load step pattern from a bitfield number
+   * Each bit represents one step (1 = active, 0 = inactive)
+   */
+  private loadPatternFromBitfield(bitfield: number): void {
+    for (let i = 0; i < 16; i++) {
+      this.stepData[i] = (bitfield & (1 << i)) !== 0;
+    }
+  }
+
+  /**
+   * Convert step pattern to a bitfield number for efficient storage
+   * Each bit represents one step (1 = active, 0 = inactive)
+   */
+  private patternToBitfield(): number {
+    let bitfield = 0;
+    for (let i = 0; i < 16; i++) {
+      if (this.stepData[i]) {
+        bitfield |= (1 << i);
+      }
+    }
+    return bitfield;
   }
 
   protected createNodes(): void {
@@ -305,6 +329,8 @@ export class SequencerModule extends BaseModule {
   public setStep(index: number, value: boolean): void {
     if (index >= 0 && index < 16) {
       this.stepData[index] = value;
+      // Sync to params for persistence
+      super.setParam('stepPattern', this.patternToBitfield());
     }
   }
 
@@ -334,6 +360,13 @@ export class SequencerModule extends BaseModule {
             this.triggerGainNode.gain.setValueAtTime(0, this.context.currentTime);
           }
         }
+      }
+    } else if (name === 'stepPattern') {
+      // Restore step pattern from saved value
+      // Explicit 0 = all-off pattern (valid)
+      // undefined = legacy save, keep default pattern (backward compatibility)
+      if (value !== undefined) {
+        this.loadPatternFromBitfield(value as number);
       }
     }
   }
