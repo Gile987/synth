@@ -33,6 +33,7 @@ Click any module button in the left sidebar:
 - **VCA** - Controls amplitude/loudness
 - **Reverb** - Convolution reverb with programmable impulse responses
 - **Delay** - Echo effect with time, feedback, and mix controls
+- **Chorus/Flanger** - Modulated delay for wide chorus thickening and jet-like flanger sweeps
 - **Distortion** - Wave shaping distortion with drive and mix
 - **Multi-FX** - Ring modulator, bit crusher, wave folder, and tremolo
 
@@ -69,7 +70,7 @@ Valid connections:
 - ADSR `output` → VCA `cv` (shaped amplitude)
 - ADSR `output` → Filter `cutoff` (envelope filter)
 - Sequencer `gate` → ADSR `gate` (rhythmic triggering)
-- Sequencer `gate` → Oscillator `frequency` (pitch sequences)
+- Oscillator `output` → Scope `input` (visualize the waveform)
 
 ### 4. Adjust Parameters
 
@@ -258,6 +259,23 @@ Echo effect with adjustable time, feedback, and mix.
 
 **Usage:** Create rhythmic echoes, slapback effects, or ambient washes.
 
+### Chorus/Flanger
+
+Modulated delay effect for thick chorus sounds and jet-like flanger sweeps.
+
+**Parameters:**
+- **Rate** (0.1 - 20 Hz) - Speed of the modulation
+- **Depth** (0 - 1) - How far the delayed signal is modulated
+- **Delay** (0 - 20 ms) - Base delay time (short for flanger, longer for chorus)
+- **Feedback** (0 - 0.95) - How much of the modulated signal feeds back
+- **Mix** (0 - 1) - Balance between dry and wet signal
+
+**Ports:**
+- **Input** (audio) - Sound to process
+- **Output** (audio) - Processed sound
+
+**Usage:** For chorus, use longer delay times with low feedback for a wide, thickening effect. For flanger, use very short delay times with higher feedback for sweeping jet-plane tones.
+
 ### Distortion
 
 Wave shaping distortion for adding grit and harmonics.
@@ -363,15 +381,17 @@ Sends audio to your speakers.
 
 Your work is automatically saved to browser storage every 5 seconds. The toolbar shows a status indicator when auto-save is active:
 
-- **"Auto-saving..."** appears while the patch is being written
+- **"Saving..."** appears while the patch is being written
 - **"Saved just now"** (with a checkmark) confirms the save completed
 - The timestamp updates to show how long ago the last save happened ("Saved 2 min ago")
 
-Toggle auto-save on or off with the checkbox in the toolbar. Auto-save only triggers when something has changed.
+Toggle auto-save on or off with the checkbox in the toolbar. Auto-save only triggers when something has changed, including parameter adjustments, module additions, and cable connections.
 
 ### Save and Load Presets
 
 Click the **Presets** button in the toolbar to open the preset browser.
+
+This build does not ship with factory presets, so the list starts empty until you save your own patch.
 
 **Save a patch:**
 1. Type a name in the "Save Current Patch" field
@@ -391,19 +411,23 @@ Saved patches appear with a green "Saved" badge. You can delete any saved patch 
 
 ### Clear Session
 
-Click the red **Clear Session** button in the toolbar to wipe everything:
+Click the red **Clear** button in the toolbar to wipe everything:
 
 1. A confirmation dialog asks "Delete all modules? This cannot be undone."
-2. Clicking OK removes all modules and connections
-3. The auto-saved state is also cleared
-4. You return to the "Click to Start Audio" start screen
+2. Clicking OK removes all modules, connections, and parameter values
+3. The auto-saved state in localStorage is deleted
+4. Autosave subscriptions stop
+5. You return to the "Click to Start Audio" start screen
+
+Clicking "Start Audio" again creates a fresh session with no leftover state.
 
 ### Session Restore
 
-When you refresh the page or reopen the app, your previous session is restored automatically:
+When you click "Start Audio" after refreshing or reopening the app, your previous session is restored automatically:
 
 - A "Session restored" notification appears at the top of the screen
-- All modules, connections, and parameter values are reloaded from the last auto-save
+- All modules, connections, and parameter values (including sequencer step patterns) are reloaded from the last auto-save
+- The patch is validated before loading; if it's corrupted or incompatible, the restore is skipped
 - Session restore only happens if you didn't manually clear the session before closing
 
 ## Keyboard Shortcuts
@@ -424,7 +448,7 @@ When you refresh the page or reopen the app, your previous session is restored a
 
 - You can only drag from **outputs** (right side) to **inputs** (left side)
 - You cannot connect a module to itself
-- Audio ports connect to audio ports, control to control
+- Audio outputs should connect to audio inputs, control outputs to modulation inputs, and gate/trigger outputs to timing inputs like ADSR `gate` or Sequencer `reset`
 
 ### Modules Won't Move
 
@@ -438,3 +462,14 @@ npm run build
 ```
 
 Output goes to `dist/` folder.
+
+## Development Commands
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview the production build locally |
+| `npm run check` | Type-check with svelte-check |
+| `npm run quality` | Run check + build together |
+| `npm run typecheck` | Strict check that fails on warnings |

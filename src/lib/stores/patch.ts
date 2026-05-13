@@ -1,5 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
-import type { ModuleInstance, Connection, Position, ModuleDefinition } from '$types';
+import type { ModuleInstance, Connection, Position, ModuleDefinition, ParamValue } from '$types';
 
 /**
  * Module store - manages all module instances
@@ -27,9 +27,28 @@ function createModuleStore() {
           ...module,
           position: { ...position }
         };
-        modules.set(id, updatedModule);
+        const updated = new Map(modules);
+        updated.set(id, updatedModule);
+        return updated;
       }
-      return new Map(modules);
+      return modules;
+    }),
+    updateParam: (id: string, paramName: string, value: ParamValue) => update(modules => {
+      const module = modules.get(id);
+      if (module) {
+        // Create new params map for reactivity
+        const updatedParams = new Map(module.params);
+        updatedParams.set(paramName, value);
+        // Create new module instance with updated params for reactivity
+        const updatedModule: ModuleInstance = {
+          ...module,
+          params: updatedParams
+        };
+        const updated = new Map(modules);
+        updated.set(id, updatedModule);
+        return updated;
+      }
+      return modules;
     }),
     clear: () => set(new Map()),
   };

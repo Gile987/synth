@@ -105,7 +105,6 @@ declare module '$stores' {
     loadFromLocalStorage(presetName: string): import('$types').PatchState | null;
     listPresets(): Array<{ name: string; state: import('$types').PatchState; createdAt: string }>;
     deletePreset(presetName: string): boolean;
-    triggerAutosave(onSave?: () => void): void;
     hasAutosave(): boolean;
     loadAutosave(): import('$types').PatchState | null;
     clearAutosave(): void;

@@ -1,24 +1,8 @@
 import { ModuleRegistry } from '$core/registry';
 import { PatchEngine } from '$core/patch-engine';
-import { OscillatorModule, OSCILLATOR_DEFINITION } from '$modules/oscillator';
-import { FilterModule, FILTER_DEFINITION } from '$modules/filter';
-import { OutputModule, OUTPUT_DEFINITION } from '$modules/output';
-import { LFOModule, LFO_DEFINITION } from '$modules/lfo';
-import { ADSRModule, ADSR_DEFINITION } from '$modules/adsr';
-import { VCAModule, VCA_DEFINITION } from '$modules/vca';
-import { SequencerModule, SEQUENCER_DEFINITION } from '$modules/sequencer';
-import { NoiseModule, NOISE_DEFINITION } from '$modules/noise';
-import { ReverbModule, REVERB_DEFINITION } from '$modules/reverb';
-import { DelayModule, DELAY_DEFINITION } from '$modules/delay';
-import { ChorusFlangerModule, CHORUS_FLANGER_DEFINITION } from '$modules/chorus-flanger';
-import { MixerModule, MIXER_DEFINITION } from '$modules/mixer';
-import { DistortionModule, DISTORTION_DEFINITION } from '$modules/distortion';
-import { AttenuverterModule, ATTENUVERTER_DEFINITION } from '$modules/attenuverter';
-import { MultiFxModule, MULTI_FX_DEFINITION } from '$modules/multi-fx';
-import { MultModule, MULT_DEFINITION } from '$modules/mult';
-import { ScopeModule, SCOPE_DEFINITION } from '$modules/scope';
+import { MODULE_DESCRIPTORS } from './module-registry';
 import { modules, connections, moduleDefinitions } from './patch';
-import type { Connection, ModuleInstance, Position, ParamValue, PatchState } from '$types';
+import type { Connection, ModuleDefinition, ModuleInstance, Position, PortDefinition, ParamValue, PatchState, SerializableModuleInstance } from '$types';
 
 class SynthService {
   private registry: ModuleRegistry;
@@ -34,23 +18,10 @@ class SynthService {
   public registerModules(): void {
     if (this.modulesRegistered) return;
 
-    this.registry.register(OSCILLATOR_DEFINITION, (id) => new OscillatorModule(id));
-    this.registry.register(FILTER_DEFINITION, (id) => new FilterModule(id));
-    this.registry.register(OUTPUT_DEFINITION, (id) => new OutputModule(id));
-    this.registry.register(LFO_DEFINITION, (id) => new LFOModule(id));
-    this.registry.register(ADSR_DEFINITION, (id) => new ADSRModule(id));
-    this.registry.register(VCA_DEFINITION, (id) => new VCAModule(id));
-    this.registry.register(SEQUENCER_DEFINITION, (id) => new SequencerModule(id));
-    this.registry.register(NOISE_DEFINITION, (id) => new NoiseModule(id));
-    this.registry.register(REVERB_DEFINITION, (id) => new ReverbModule(id));
-    this.registry.register(DELAY_DEFINITION, (id) => new DelayModule(id));
-    this.registry.register(CHORUS_FLANGER_DEFINITION, (id) => new ChorusFlangerModule(id));
-    this.registry.register(MIXER_DEFINITION, (id) => new MixerModule(id));
-    this.registry.register(DISTORTION_DEFINITION, (id) => new DistortionModule(id));
-    this.registry.register(ATTENUVERTER_DEFINITION, (id) => new AttenuverterModule(id));
-    this.registry.register(MULTI_FX_DEFINITION, (id) => new MultiFxModule(id));
-    this.registry.register(MULT_DEFINITION, (id) => new MultModule(id));
-    this.registry.register(SCOPE_DEFINITION, (id) => new ScopeModule(id));
+    // Register all modules from the declarative descriptor list
+    MODULE_DESCRIPTORS.forEach(({ definition, factory }) => {
+      this.registry.register(definition, factory);
+    });
 
     moduleDefinitions.set(this.registry.getAllDefinitions());
 
@@ -145,6 +116,8 @@ class SynthService {
     }
 
     this.engine.setModuleParam(moduleId, paramName, value);
+    // Emit store update to trigger autosave and UI reactivity
+    modules.updateParam(moduleId, paramName, value);
   }
 
   public getModuleInstance(moduleId: string) {
@@ -162,8 +135,99 @@ class SynthService {
     this.engine.dispose();
     modules.clear();
     connections.clear();
-    this.modulesRegistered = false;
+    // modulesRegistered is NOT reset: the singleton ModuleRegistry retains all
+    // type registrations and has no clear() method. Resetting this flag would
+    // cause initializeAudio() to throw "Modules must be registered" after a
+    // clear-session → restart flow, while re-registering would hit the
+    // registry's duplicate-guard throw. Only the audio engine and stores need clearing.
     this.audioInitialized = false;
+  }
+
+  /**
+   * Validate patch state semantically before loading
+   * Checks module types, param validity, and connection integrity
+   */
+  private validatePatchSemantics(state: PatchState): string[] {
+    const errors: string[] = [];
+    const savedModulesById = new Map<string, SerializableModuleInstance>();
+    const savedDefinitionsByModuleId = new Map<string, ModuleDefinition>();
+
+    for (const savedModule of state.modules) {
+      savedModulesById.set(savedModule.id, savedModule);
+    }
+
+    // Check module types exist in registry
+    for (const savedModule of state.modules) {
+      const definition = this.registry.getDefinition(savedModule.type);
+      if (!definition) {
+        errors.push(`Unknown module type: ${savedModule.type}`);
+        continue;
+      }
+
+      savedDefinitionsByModuleId.set(savedModule.id, definition);
+    }
+
+    // Validate params against module definitions
+    for (const savedModule of state.modules) {
+      const definition = savedDefinitionsByModuleId.get(savedModule.id);
+      if (!definition) continue;
+
+      const validParamNames = new Set(definition.params.map((p: { name: string }) => p.name));
+
+      for (const [paramName, paramValue] of Object.entries(savedModule.params)) {
+        // Check param name is valid for this module type
+        if (!validParamNames.has(paramName)) {
+          errors.push(`Invalid param '${paramName}' for module type '${savedModule.type}'`);
+          continue;
+        }
+
+        // Check param value type
+        const paramDef = definition.params.find((p: { name: string }) => p.name === paramName);
+        if (paramDef) {
+          const valueType = typeof paramValue;
+          const expectedType = typeof paramDef.defaultValue;
+          if (valueType !== expectedType) {
+            errors.push(`Type mismatch for param '${paramName}' in '${savedModule.type}': expected ${expectedType}, got ${valueType}`);
+          }
+        }
+      }
+    }
+
+    // Validate connections reference existing modules
+    const moduleIds = new Set(state.modules.map((m: { id: string }) => m.id));
+    for (const savedConnection of state.connections) {
+      if (!moduleIds.has(savedConnection.sourceModuleId)) {
+        errors.push(`Connection references unknown source module: ${savedConnection.sourceModuleId}`);
+      }
+      if (!moduleIds.has(savedConnection.targetModuleId)) {
+        errors.push(`Connection references unknown target module: ${savedConnection.targetModuleId}`);
+      }
+
+      const sourceModule = savedModulesById.get(savedConnection.sourceModuleId);
+      const targetModule = savedModulesById.get(savedConnection.targetModuleId);
+      const sourceDefinition = savedDefinitionsByModuleId.get(savedConnection.sourceModuleId);
+      const targetDefinition = savedDefinitionsByModuleId.get(savedConnection.targetModuleId);
+
+      if (!sourceModule || !targetModule || !sourceDefinition || !targetDefinition) {
+        continue;
+      }
+
+      const sourcePort = sourceDefinition.ports.find((port: PortDefinition) => port.name === savedConnection.sourcePortName);
+      if (!sourcePort) {
+        errors.push(`Invalid source port '${savedConnection.sourcePortName}' for module type '${sourceModule.type}'`);
+      } else if (sourcePort.direction !== 'output') {
+        errors.push(`Invalid source port direction for '${savedConnection.sourcePortName}' on module type '${sourceModule.type}': expected output, got ${sourcePort.direction}`);
+      }
+
+      const targetPort = targetDefinition.ports.find((port: PortDefinition) => port.name === savedConnection.targetPortName);
+      if (!targetPort) {
+        errors.push(`Invalid target port '${savedConnection.targetPortName}' for module type '${targetModule.type}'`);
+      } else if (targetPort.direction !== 'input') {
+        errors.push(`Invalid target port direction for '${savedConnection.targetPortName}' on module type '${targetModule.type}': expected input, got ${targetPort.direction}`);
+      }
+    }
+
+    return errors;
   }
 
   /**
@@ -173,6 +237,13 @@ class SynthService {
   public async loadPatch(state: PatchState): Promise<void> {
     if (!this.audioInitialized) {
       throw new Error('Audio engine not initialized');
+    }
+
+    // Semantic validation before destructive clear
+    const validationErrors = this.validatePatchSemantics(state);
+    if (validationErrors.length > 0) {
+      console.error('[synth] Patch validation failed:', validationErrors);
+      throw new Error(`Patch validation failed: ${validationErrors.join(', ')}`);
     }
 
     // Clear existing patch

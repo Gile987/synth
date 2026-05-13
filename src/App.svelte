@@ -13,6 +13,9 @@
   let error = $state<string | null>(null);
   let presetBrowserOpen = $state(false);
 
+  // === Autosave ===
+  // Ownership: App.svelte owns autosave triggering (subscriptions, debounce, UI status).
+  // PresetManager owns persistence (save/load/clear/serialize to localStorage).
   let autosaveEnabled = $state(true);
   let autosaveStatus = $state<'idle' | 'saving' | 'saved'>('idle');
   let lastSavedTime = $state<Date | null>(null);
@@ -41,6 +44,8 @@
 
   async function startAudio() {
     try {
+      // Modules are registered once in onMount and never unregistered.
+      // The singleton ModuleRegistry persists across dispose() calls.
       await synthService.initializeAudio();
       audioStarted = true;
       
@@ -83,6 +88,9 @@
       }
 
       autosaveTimeout = setTimeout(() => {
+        // Re-check enabled state - user may have disabled autosave while timeout was pending
+        if (!autosaveEnabled) return;
+
         const currentModules = get(modules);
         if (currentModules.size === 0) {
           presetManager.clearAutosave();
@@ -90,13 +98,18 @@
         }
 
         autosaveStatus = 'saving';
-        
+
         // Wait a tiny bit for visual feedback
         setTimeout(() => {
+          // Final check before writing - ensure autosave is still enabled
+          if (!autosaveEnabled) {
+            autosaveStatus = 'idle';
+            return;
+          }
           presetManager.saveToLocalStorage('autosave');
           autosaveStatus = 'saved';
           lastSavedTime = new Date();
-          
+
           if (savedTimeout) clearTimeout(savedTimeout);
           savedTimeout = setTimeout(() => {
             if (autosaveStatus === 'saved') autosaveStatus = 'idle';
@@ -129,6 +142,7 @@
       autosaveCleanup = null;
     }
     presetManager.clearSession();
+    synthService.dispose(); // Resets audio engine + stores, keeps module registry intact
     audioStarted = false; // Reset to start screen
     autosaveStatus = 'idle';
   }
@@ -264,21 +278,6 @@
     color: #d4a8a8;
     font-size: 13px;
     font-family: 'Inter', sans-serif;
-  }
-
-  .main-content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    font-size: 16px;
-    color: #606080;
   }
 
   .main-content {

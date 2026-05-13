@@ -56,13 +56,17 @@ Open http://localhost:3000 (or the port shown), click "Start Audio", then add mo
 ```
 src/
 ├── main.ts              # Entry point
-├── App.svelte           # Root component
+├── App.svelte           # Root component (autosave, session restore, audio gate)
 └── lib/
     ├── content/         # Educational content (synthesis help guide)
-    ├── core/            # Audio engine (registry, patch-engine, base-module)
-    ├── modules/         # Synth modules (17 total: oscillator, noise, filter, vca, reverb, delay, chorus-flanger, distortion, multi-fx, lfo, adsr, sequencer, attenuverter, mixer, mult, scope, output)
-    ├── components/ui/   # Svelte UI components (Module, PatchBoard, CableLayer, SequencerModule, ModulePalette, SynthHelpModal, PresetBrowser, AutosaveStatus, etc.)
-    ├── stores/          # State management
+    ├── core/            # Audio engine (registry, patch-engine, base-module, port helpers)
+    ├── modules/         # Synth modules (17 total) + ADSR AudioWorklet processor
+    ├── components/ui/   # Svelte UI components
+    │                      ModuleShell (shared frame), ModuleFrame (content wrapper),
+    │                      Port (shared port primitive), Module, SequencerModule,
+    │                      ScopeModule, PatchBoard, CableLayer, ModulePalette,
+    │                      SynthHelpModal, PresetBrowser, AutosaveStatus
+    ├── stores/          # State management (patch stores, synth service, module-registry, presets)
     └── types/           # TypeScript definitions
 ```
 
@@ -74,7 +78,7 @@ src/
 - Sequencer step playback indicator
 - Scope module with real-time waveform visualization
 - Browser-safe audio initialization gate before the patching UI appears
-- Auto-save with visual feedback ("Auto-saving..." and "Saved" indicators in the toolbar)
+- Auto-save with visual feedback ("Saving..." and "Saved {timeAgo}" indicators in the toolbar)
 - Preset browser for saving, loading, and managing patches
 - Session restore on app startup from auto-saved state
 
@@ -86,7 +90,7 @@ The synth includes a preset system for saving and loading patches:
 - **Load patches** from the saved presets list
 - **Export/Import** patches as JSON files for backup or sharing
 - **Auto-save** saves your work to localStorage every 5 seconds (toggle on/off)
-- **Clear Session** removes all modules and auto-saved state, returning to the start screen
+- **Clear** removes all modules and auto-saved state, returning to the start screen
 - **Session restore** reloads your previous patch when you refresh or reopen the app
 
 No default presets are bundled. You create and save your own patches.

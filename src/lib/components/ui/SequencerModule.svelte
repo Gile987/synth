@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { synthService, selectedModuleId, selectedConnectionId, connections } from '$stores';
-  import type { ModuleInstance, ModuleDefinition, PortDefinition, ParamValue } from '$types';
-  import HelpIcon from './HelpIcon.svelte';
+  import { synthService } from '$stores';
+  import type { ModuleInstance, ModuleDefinition, ParamValue } from '$types';
+  import ModuleFrame from './ModuleFrame.svelte';
 
   // Type guard for number params
   function getNumberParam(params: Map<string, ParamValue>, name: string, defaultValue: number): number {
@@ -43,8 +43,6 @@
 
   let { module, definition, isDragging = false, onDragStart, onPortMouseDown, onPortMouseUp }: Props = $props();
 
-  let isSelected = $derived($selectedModuleId === module.id);
-  let position = $derived(module.position);
   let steps = $derived(getNumberParam(module.params, 'steps', 16));
   
   // Step pattern - sync with module instance on mount/update
@@ -73,38 +71,24 @@
     synthService.setModuleParam(module.id, name, value);
   }
 
-  function handleDelete() {
-    synthService.removeModule(module.id);
-  }
-
-  function handleSelect() {
-    $selectedModuleId = module.id;
-    $selectedConnectionId = null;
-  }
-
   function toggleStep(index: number) {
     stepPattern[index] = !stepPattern[index];
     
-    // Update the module instance directly
+    // Update the module instance and persist the pattern
     const moduleInstance = synthService.getModuleInstance?.(module.id);
     if (isSequencerInstance(moduleInstance)) {
       moduleInstance.setStep(index, stepPattern[index]);
     }
-  }
-
-  const inputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'input'));
-  const outputPorts = $derived(definition.ports.filter((p: PortDefinition) => p.direction === 'output'));
-
-  // Reactive set of connected input ports
-  const connectedInputs = $derived.by(() => {
-    const connected = new Set<string>();
-    for (const conn of $connections.values()) {
-      if (conn.targetModuleId === module.id) {
-        connected.add(conn.targetPortName);
+    
+    // Calculate bitfield for persistence
+    let bitfield = 0;
+    for (let i = 0; i < 16; i++) {
+      if (stepPattern[i]) {
+        bitfield |= (1 << i);
       }
     }
-    return connected;
-  });
+    handleParamChange('stepPattern', bitfield);
+  }
 
   // Reactive params that update when module changes
   let rateValue = $derived(getNumberParam(module.params, 'rate', 4));
@@ -120,9 +104,22 @@
   
   // Track current playing step
   let currentStep = $state(0);
+  let isVisible = $state(true);
   
-  // Poll for current step at 60fps
+  // Track visibility changes
   $effect(() => {
+    const handleVisibilityChange = () => {
+      isVisible = document.visibilityState === 'visible';
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  });
+  
+  // Poll for current step at 60fps only when playing and visible
+  $effect(() => {
+    // Don't poll if not playing or tab is hidden
+    if (!playingValue || !isVisible) return;
+    
     const interval = setInterval(() => {
       const moduleInstance = synthService.getModuleInstance?.(module.id);
       if (isSequencerInstance(moduleInstance)) {
@@ -134,71 +131,18 @@
   });
 </script>
 
-<div
-  class="module sequencer-module"
-  class:selected={isSelected}
-  class:dragging={isDragging}
-  style="left: {position.x}px; top: {position.y}px;"
-  onclick={handleSelect}
-  onkeydown={(e) => e.key === 'Delete' && handleDelete()}
-  role="button"
-  tabindex="0"
-  data-module-id={module.id}
+<ModuleFrame
+  {module}
+  {definition}
+  {isDragging}
+  shellClass="sequencer"
+  portVariant="cool"
+  {onDragStart}
+  {onPortMouseDown}
+  {onPortMouseUp}
 >
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <header
-    class="module-header category-{definition.category}"
-    onmousedown={onDragStart}
-  >
-    <span class="title">{definition.label}</span>
-    <HelpIcon content={definition.help} size={14} />
-    <button class="delete-btn" onclick={handleDelete}>×</button>
-  </header>
-
-  <div class="module-body">
-    <div class="ports-section">
-      <div class="ports-column inputs">
-        {#each inputPorts as port}
-          <div class="port">
-            <div
-              class="port-circle type-{port.type}"
-              class:input-port={port.direction === 'input'}
-              class:output-port={port.direction === 'output'}
-              data-port-name={port.name}
-              title={port.type === 'control' ? 'Modulation input: connect an output here to modulate this parameter' : `Input: ${port.name}`}
-              onmousedown={(e) => { e.stopPropagation(); onPortMouseDown(port.name, port.direction); }}
-              onmouseup={(e) => { e.stopPropagation(); onPortMouseUp(port.name, port.direction); }}
-              role="button"
-              tabindex="0"
-            >
-              <span class="port-led type-{port.type}" class:active={connectedInputs.has(port.name)}></span>
-            </div>
-            <span class="port-label">{port.name}</span>
-          </div>
-        {/each}
-      </div>
-
-      <div class="ports-column outputs">
-        {#each outputPorts as port}
-          <div class="port">
-            <span class="port-label">{port.name}</span>
-            <div
-              class="port-circle type-{port.type}"
-              class:input-port={port.direction === 'input'}
-              class:output-port={port.direction === 'output'}
-              data-port-name={port.name}
-              onmousedown={(e) => { e.stopPropagation(); onPortMouseDown(port.name, port.direction); }}
-              onmouseup={(e) => { e.stopPropagation(); onPortMouseUp(port.name, port.direction); }}
-              role="button"
-              tabindex="0"
-            ></div>
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- Step Grid -->
-    <div class="step-grid">
+  <!-- Step Grid -->
+  <div class="step-grid">
       {#each stepPattern as isActive, i}
         <button
           class="step-button"
@@ -212,8 +156,8 @@
       {/each}
     </div>
 
-    <!-- Controls -->
-    <div class="sequencer-controls">
+  <!-- Controls -->
+  <div class="sequencer-controls">
       <div class="control-row rate-row">
         <div class="rate-header">
           <label for="{module.id}-rate">Rate</label>
@@ -261,252 +205,10 @@
           </select>
         </div>
       </div>
-    </div>
   </div>
-</div>
+</ModuleFrame>
 
 <style>
-  .module {
-    position: absolute;
-    width: 320px;
-    background: #2a2a3e;
-    border: 1px solid #444;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    cursor: default;
-    user-select: none;
-  }
-
-  .module.selected {
-    border-color: #4a9eff;
-    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
-  }
-
-  .module.dragging {
-    z-index: 20;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  }
-
-  .module-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-radius: 8px 8px 0 0;
-    cursor: grab;
-    gap: 8px;
-  }
-
-  .module-header:active {
-    cursor: grabbing;
-  }
-
-  .category-modulation { 
-    background: linear-gradient(135deg, #2a6e4a, #1a5e3a); 
-  }
-
-  .title {
-    flex: 1;
-    font-weight: 600;
-    font-size: 14px;
-  }
-
-  .delete-btn {
-    width: 20px;
-    height: 20px;
-    border: none;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    line-height: 1;
-  }
-
-  .delete-btn:hover {
-    background: rgba(231, 76, 60, 0.8);
-  }
-
-  .module-body {
-    padding: 12px;
-  }
-
-  .ports-section {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .ports-column {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .port {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .ports-column.inputs .port {
-    justify-content: flex-start;
-  }
-
-  .ports-column.outputs .port {
-    justify-content: flex-end;
-  }
-
-  .port-circle {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    cursor: crosshair;
-    border: 2px solid;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
-    position: relative;
-    z-index: 10;
-    box-shadow:
-      0 1px 4px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  }
-
-  .port-circle::before {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    border-radius: inherit;
-    background: rgba(10, 12, 18, 0.6);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7);
-  }
-
-  .port-circle::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 4px;
-    height: 4px;
-    border-radius: inherit;
-    background: rgba(255, 255, 255, 0.35);
-    opacity: 0.5;
-  }
-
-  .port-circle:hover {
-    transform: scale(1.18);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 0 12px rgba(0, 0, 0, 0.36),
-      0 0 12px currentColor;
-  }
-
-  .port-led {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: rgba(40, 40, 40, 0.8);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
-    transition: all 0.15s ease;
-    z-index: 12;
-    opacity: 0.6;
-  }
-
-  .port-led.active.type-audio {
-    background: #ff9999;
-    box-shadow:
-      0 0 4px #ff6666,
-      0 0 8px #ff4444,
-      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
-    opacity: 1;
-  }
-
-  .port-led.active.type-control {
-    background: #99ccff;
-    box-shadow:
-      0 0 4px #66b3ff,
-      0 0 8px #3399ff,
-      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
-    opacity: 1;
-  }
-
-  .port-led.active.type-gate {
-    background: #99ff99;
-    box-shadow:
-      0 0 4px #66ff66,
-      0 0 8px #33ff33,
-      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
-    opacity: 1;
-  }
-
-  .port-led.active.type-trigger {
-    background: #ffee99;
-    box-shadow:
-      0 0 4px #ffdd66,
-      0 0 8px #ffcc33,
-      inset 0 -1px 1px rgba(0, 0, 0, 0.2);
-    opacity: 1;
-  }
-
-  .type-audio {
-    color: #d28b82;
-    background: radial-gradient(circle at 35% 30%, #f1b0a5 0%, #d28b82 38%, #7f4a44 100%);
-    border-color: #b96d65;
-  }
-
-  .type-control { 
-    color: #87a5c7;
-    border-radius: 3px;
-    width: 13px;
-    height: 13px;
-    border: 2px solid #87a5c7;
-    background: linear-gradient(180deg, rgba(135, 165, 199, 0.18) 0%, rgba(25, 31, 49, 0.82) 100%);
-  }
-  .type-control::before {
-    inset: 1px;
-    border-radius: 1px;
-  }
-  .type-control::after {
-    border-radius: 1px;
-  }
-  .type-control:hover {
-    background: linear-gradient(180deg, rgba(135, 165, 199, 0.32) 0%, rgba(25, 31, 49, 0.88) 100%);
-  }
-  .type-gate {
-    color: #8fc78f;
-    background: radial-gradient(circle at 35% 30%, #c9f0be 0%, #8fc78f 42%, #50734a 100%);
-    border-color: #77aa73;
-  }
-
-  .type-trigger {
-    color: #e0bc77;
-    background: radial-gradient(circle at 35% 30%, #f7df9d 0%, #e0bc77 40%, #8a6830 100%);
-    border-color: #c99d4e;
-  }
-
-  .input-port {
-    margin-right: 2px;
-  }
-
-  .output-port {
-    margin-left: 2px;
-  }
-
-  .port-label {
-    font-size: 11px;
-    color: #d0d4df;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    font-family: 'JetBrains Mono', monospace;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
-  }
-
   .step-grid {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
