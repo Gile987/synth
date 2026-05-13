@@ -24,16 +24,20 @@
 </script>
 
 {#if isOpen}
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="modal-backdrop"
+    role="presentation"
     onclick={onClose}
     onkeydown={handleKeydown}
     transition:fade={{ duration: 200 }}
   >
     <div
       class="modal-content"
+      role="dialog"
+      aria-modal="true"
+      tabindex="-1"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
       transition:scale={{ duration: 200, start: 0.95 }}
     >
       <header class="modal-header">
