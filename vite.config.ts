@@ -4,6 +4,7 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [svelte()],
+  assetsInclude: ['**/*.worklet.js'],
   resolve: {
     alias: {
       '$lib': resolve(__dirname, 'src/lib'),
