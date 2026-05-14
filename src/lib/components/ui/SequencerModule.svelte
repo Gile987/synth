@@ -1,4 +1,5 @@
 <script lang="ts">
+  import './module-controls.css';
   import { synthService } from '$stores';
   import type { ModuleInstance, ModuleDefinition, ParamValue } from '$types';
   import ModuleFrame from './ModuleFrame.svelte';
@@ -158,12 +159,12 @@
 
   <!-- Controls -->
   <div class="sequencer-controls">
-      <div class="control-row rate-row">
+      <div class="mc-control-row rate-row">
         <div class="rate-header">
           <label for="{module.id}-rate">Rate</label>
-          <span class="rate-value">{localRateValue.toFixed(1)} Hz</span>
+          <span class="mc-value-badge rate-value">{localRateValue.toFixed(1)} Hz</span>
         </div>
-        <div class="slider-shell">
+        <div class="mc-slider-control slider-shell">
           <input
             id="{module.id}-rate"
             type="range"
@@ -176,23 +177,23 @@
         </div>
       </div>
       
-      <div class="control-row">
+      <div class="mc-control-row">
         <label for="{module.id}-playing">Playing</label>
-        <label class="toggle-control" for="{module.id}-playing">
+        <label class="mc-toggle-control" for="{module.id}-playing">
           <input
             id="{module.id}-playing"
             type="checkbox"
             checked={playingValue}
             onchange={(e) => handleParamChange('playing', e.currentTarget.checked)}
           />
-          <span class="toggle-track">
-            <span class="toggle-thumb"></span>
+          <span class="mc-toggle-track">
+            <span class="mc-toggle-thumb"></span>
           </span>
-          <span class="toggle-label">{playingValue ? 'RUN' : 'STOP'}</span>
+          <span class="mc-toggle-label">{playingValue ? 'RUN' : 'STOP'}</span>
         </label>
       </div>
       
-      <div class="control-row">
+      <div class="mc-control-row">
         <label for="{module.id}-steps">Steps</label>
         <div class="select-shell">
           <select
@@ -264,21 +265,8 @@
     gap: 10px;
   }
 
-  .control-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 8px;
-    border: 1px solid rgba(86, 97, 110, 0.5);
-    border-radius: 6px;
-    background: linear-gradient(180deg, rgba(27, 29, 44, 0.96) 0%, rgba(18, 20, 31, 0.98) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.03),
-      0 1px 0 rgba(0, 0, 0, 0.2);
-    min-width: 0;
-  }
-
-  .control-row label {
+  /* We override .mc-control-row label inside Sequencer directly */
+  :global(.module.sequencer) .mc-control-row label:first-child {
     font-size: 11px;
     color: #aeb7c7;
     text-transform: uppercase;
@@ -317,118 +305,6 @@
     width: 100%;
   }
 
-  .control-row input[type="range"] {
-    flex: 1;
-    height: 18px;
-    background: transparent;
-    appearance: none;
-    -webkit-appearance: none;
-  }
-
-  .control-row input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 999px;
-    border: 1px solid #455061;
-    background: linear-gradient(180deg, #161b27 0%, #2a3145 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
-  }
-
-  .control-row input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    margin-top: -5px;
-    border-radius: 50%;
-    border: 1px solid #50627d;
-    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    cursor: pointer;
-  }
-
-  .control-row input[type="range"]::-moz-range-track {
-    height: 6px;
-    border-radius: 999px;
-    border: 1px solid #455061;
-    background: linear-gradient(180deg, #161b27 0%, #2a3145 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
-  }
-
-  .control-row input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid #50627d;
-    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    cursor: pointer;
-  }
-
-  .control-row input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .toggle-control {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    min-width: 0;
-  }
-
-  .toggle-track {
-    position: relative;
-    width: 34px;
-    height: 18px;
-    border-radius: 999px;
-    border: 1px solid #455061;
-    background: linear-gradient(180deg, #161b27 0%, #101521 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55);
-  }
-
-  .toggle-thumb {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid #50627d;
-    background: radial-gradient(circle at 35% 30%, #eef4ff 0%, #9ab5db 40%, #536985 100%);
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    transition: transform 0.16s ease, background 0.16s ease;
-  }
-
-  .toggle-control input:checked + .toggle-track {
-    border-color: #5a8d66;
-    background: linear-gradient(180deg, #203624 0%, #162718 100%);
-    box-shadow:
-      inset 0 1px 2px rgba(0, 0, 0, 0.55),
-      0 0 8px rgba(143, 199, 143, 0.15);
-  }
-
-  .toggle-control input:checked + .toggle-track .toggle-thumb {
-    transform: translateX(16px);
-    background: radial-gradient(circle at 35% 30%, #e3f7d7 0%, #9dce8f 38%, #547148 100%);
-    border-color: #5a8d66;
-  }
-
-  .toggle-label {
-    min-width: 34px;
-    color: #d8e4d1;
-    font-size: 11px;
-    letter-spacing: 0.8px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
   .select-shell {
     position: relative;
     min-width: 0;
@@ -445,7 +321,7 @@
     pointer-events: none;
   }
 
-  .control-row select {
+  .select-shell select {
     min-width: 72px;
     padding: 7px 28px 7px 10px;
     border: 1px solid #455061;
@@ -456,27 +332,6 @@
     font-family: 'JetBrains Mono', monospace;
     appearance: none;
     -webkit-appearance: none;
-  }
-
-  .rate-value {
-    font-size: 11px;
-    color: #e4efdb;
-    min-width: 0;
-    width: 64px;
-    flex-shrink: 0;
-    text-align: right;
-    padding: 4px 7px;
-    border: 1px solid rgba(112, 136, 98, 0.38);
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(33, 48, 27, 0.9) 0%, rgba(24, 34, 20, 0.95) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 1px 0 rgba(0, 0, 0, 0.12);
-    font-family: 'JetBrains Mono', monospace;
-    box-sizing: border-box;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: clip;
   }
 
   .rate-row .rate-value {
