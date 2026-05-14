@@ -1,4 +1,5 @@
 <script lang="ts">
+  import './module-controls.css';
   import { synthService } from '$stores';
   import type { ModuleInstance, ModuleDefinition, ParamValue } from '$types';
   import ModuleFrame from './ModuleFrame.svelte';
@@ -79,7 +80,7 @@
             {@const sliderValue = isLog && typeof currentValue === 'number' 
               ? valueToPosition(currentValue as number, min, max) 
               : currentValue}
-            <div class="slider-control">
+            <div class="mc-control-row mc-slider-control">
               <input
                 id={paramId}
                 type="range"
@@ -108,7 +109,7 @@
                   }
                 }}
               />
-              <span class="param-value">
+              <span class="param-value mc-value-badge">
                 {#if typeof currentValue === 'number'}
                   {@const step = param.step}
                   {@const decimals = step !== undefined && step > 0 
@@ -133,17 +134,17 @@
               </select>
             </div>
           {:else if param.controlType === 'toggle'}
-            <label class="toggle-control" for={paramId}>
+            <label class="mc-control-row mc-toggle-control" for={paramId}>
               <input
                 id={paramId}
                 type="checkbox"
                 checked={typeof currentValue === 'boolean' ? currentValue : false}
                 onchange={(e) => handleParamChange(param.name, e.currentTarget.checked)}
               />
-              <span class="toggle-track">
-                <span class="toggle-thumb"></span>
+              <span class="mc-toggle-track">
+                <span class="mc-toggle-thumb"></span>
               </span>
-              <span class="toggle-label">{typeof currentValue === 'boolean' && currentValue ? 'ON' : 'OFF'}</span>
+              <span class="mc-toggle-label">{typeof currentValue === 'boolean' && currentValue ? 'ON' : 'OFF'}</span>
             </label>
           {:else if param.controlType === 'number'}
             <div class="number-control">
@@ -225,90 +226,6 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
-  .param input[type="range"] {
-    padding: 0;
-    height: 18px;
-    border: none;
-    background: transparent;
-    appearance: none;
-    -webkit-appearance: none;
-    box-shadow: none;
-  }
-
-  .param input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    border-radius: 999px;
-    border: 1px solid #4b4137;
-    background:
-      linear-gradient(180deg, rgba(26, 23, 20, 0.95) 0%, rgba(53, 46, 40, 0.96) 100%);
-    box-shadow:
-      inset 0 1px 2px rgba(0, 0, 0, 0.65),
-      0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
-  .param input[type="range"]::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    margin-top: -5px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 35% 30%, #f2e7d4 0%, #bfaa88 36%, #7e6751 100%);
-    border: 1px solid #5f4c3c;
-    cursor: pointer;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  }
-
-  .param input[type="range"]::-moz-range-track {
-    height: 6px;
-    border-radius: 999px;
-    border: 1px solid #4b4137;
-    background:
-      linear-gradient(180deg, rgba(26, 23, 20, 0.95) 0%, rgba(53, 46, 40, 0.96) 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.65);
-  }
-
-  .param input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 35% 30%, #f2e7d4 0%, #bfaa88 36%, #7e6751 100%);
-    border: 1px solid #5f4c3c;
-    cursor: pointer;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  }
-
-  .param input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .slider-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 8px;
-    border: 1px solid rgba(96, 80, 64, 0.65);
-    border-radius: 4px;
-    background: linear-gradient(180deg, rgba(29, 24, 20, 0.94) 0%, rgba(20, 17, 14, 0.96) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 1px 0 rgba(0, 0, 0, 0.16);
-    min-width: 0;
-  }
-
-  .slider-control input[type="range"] {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
   .select-control,
   .number-control {
     position: relative;
@@ -331,84 +248,8 @@
     padding-right: 28px;
   }
 
-  .toggle-control {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    align-self: flex-start;
-    padding: 6px 8px;
-    border: 1px solid rgba(96, 80, 64, 0.65);
-    border-radius: 4px;
-    background: linear-gradient(180deg, rgba(29, 24, 20, 0.94) 0%, rgba(20, 17, 14, 0.96) 100%);
-    cursor: pointer;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 1px 0 rgba(0, 0, 0, 0.16);
-  }
-
-  .toggle-track {
-    position: relative;
-    width: 34px;
-    height: 18px;
-    border-radius: 999px;
-    border: 1px solid #52473d;
-    background: linear-gradient(180deg, #221d18 0%, #17130f 100%);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55);
-  }
-
-  .toggle-thumb {
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #f1e6d3 0%, #bca788 38%, #7f6852 100%);
-    border: 1px solid #5f4c3c;
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    transition: transform 0.16s ease, background 0.16s ease;
-  }
-
-  .toggle-control input:checked + .toggle-track {
-    border-color: #5d7f56;
-    background: linear-gradient(180deg, #243321 0%, #1a2617 100%);
-    box-shadow:
-      inset 0 1px 2px rgba(0, 0, 0, 0.55),
-      0 0 8px rgba(143, 199, 143, 0.15);
-  }
-
-  .toggle-control input:checked + .toggle-track .toggle-thumb {
-    transform: translateX(16px);
-    background: radial-gradient(circle at 35% 30%, #e3f7d7 0%, #9dce8f 38%, #547148 100%);
-  }
-
-  .toggle-label {
-    min-width: 24px;
-    color: #d9cdbb;
-    font-size: 11px;
-    letter-spacing: 0.8px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
   .param-value {
     width: 70px;
     flex: 0 0 70px;
-    text-align: right;
-    font-size: 11px;
-    color: #dcedc9;
-    font-family: 'JetBrains Mono', monospace;
-    padding: 4px 7px;
-    border: 1px solid rgba(112, 136, 98, 0.38);
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(33, 48, 27, 0.9) 0%, rgba(24, 34, 20, 0.95) 100%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 1px 0 rgba(0, 0, 0, 0.12);
-    box-sizing: border-box;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 </style>
